@@ -8,203 +8,142 @@
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      background: #ffffff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #fff;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
       min-height: 100vh;
     }
     .container {
-      width: 400px;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
+      width: 400px; background: #fff;
+      padding: 30px; border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       text-align: center;
     }
     h1 {
-      font-size: 28px;
-      font-weight: 700;
       margin-bottom: 20px;
-      background: linear-gradient(90deg, #ff4fd8, #b34dff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #d633ff;
     }
-    .form-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-    .form-group label {
-      font-size: 14px;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 5px;
-    }
-    .form-group input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      outline: none;
+    input {
+      width: 90%; padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd; border-radius: 8px;
     }
     button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #ff4fd8, #b34dff);
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
+      width: 100%; padding: 12px;
+      background: linear-gradient(90deg, #ff4dd2, #a64dff);
+      border: none; border-radius: 8px;
+      color: white; font-size: 16px; font-weight: bold;
       cursor: pointer;
       margin-top: 10px;
     }
     button:hover {
       opacity: 0.9;
     }
-    .hidden {
-      display: none;
-    }
     .error {
-      color: red;
-      font-size: 14px;
+      color: red; font-size: 14px;
       margin-top: 10px;
     }
-    a {
-      color: #333;
+    .link {
+      margin-top: 15px;
       font-size: 14px;
-      text-decoration: none;
+    }
+    .link a {
+      color: #a64dff; text-decoration: none;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container" id="login-container">
     <h1>Login</h1>
-    <div class="form-group">
-      <label for="login-username">Usuário</label>
-      <input type="text" id="login-username" required>
-    </div>
-    <div class="form-group">
-      <label for="login-password">Senha</label>
-      <input type="password" id="login-password" required>
-    </div>
-    <button id="loginBtn">Entrar</button>
+    <input type="text" id="username" placeholder="Usuário">
+    <input type="password" id="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
     <p class="error" id="login-error"></p>
-    <p>Não tem conta? <a href="#" id="showRegister">Cadastre-se</a></p>
+    <p class="link">Não tem conta? <a href="#" onclick="showRegister()">Cadastre-se</a></p>
   </div>
 
-  <div class="container hidden" id="register-container">
+  <div class="container" id="register-container" style="display:none;">
     <h1>Cadastro</h1>
-    <div class="form-group">
-      <label for="register-username">Usuário</label>
-      <input type="text" id="register-username" required>
-    </div>
-    <div class="form-group">
-      <label for="register-password">Senha</label>
-      <input type="password" id="register-password" required>
-    </div>
-    <button id="registerBtn">Cadastrar</button>
+    <input type="text" id="new-username" placeholder="Novo Usuário">
+    <input type="password" id="new-password" placeholder="Nova Senha">
+    <button onclick="register()">Cadastrar</button>
     <p class="error" id="register-error"></p>
-    <p>Já tem conta? <a href="#" id="showLogin">Faça login</a></p>
-  </div>
-
-  <div class="container hidden" id="welcome-container">
-    <h1>Bem-vindo, <span id="user-name"></span>!</h1>
-    <button id="logoutBtn">Sair</button>
+    <p class="link">Já tem conta? <a href="#" onclick="showLogin()">Fazer Login</a></p>
   </div>
 
   <script>
-    const loginContainer = document.getElementById('login-container');
-    const registerContainer = document.getElementById('register-container');
-    const welcomeContainer = document.getElementById('welcome-container');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const showRegister = document.getElementById('showRegister');
-    const showLogin = document.getElementById('showLogin');
-    const loginError = document.getElementById('login-error');
-    const registerError = document.getElementById('register-error');
-    const userNameSpan = document.getElementById('user-name');
+    // "Banco de dados" em memória
+    let users = [{ username: "adm", password: "1234" }];
 
-    let users = JSON.parse(localStorage.getItem('users')) || [];
+    // Mostrar cadastro
+    function showRegister() {
+      document.getElementById("login-container").style.display = "none";
+      document.getElementById("register-container").style.display = "block";
+      document.getElementById("login-error").innerText = "";
+    }
 
-    // Função de login
+    // Mostrar login
+    function showLogin() {
+      document.getElementById("register-container").style.display = "none";
+      document.getElementById("login-container").style.display = "block";
+      document.getElementById("register-error").innerText = "";
+    }
+
+    // Login (ignora maiúsculas/minúsculas)
     function login() {
-      const username = document.getElementById('login-username').value.trim().toLowerCase();
-      const password = document.getElementById('login-password').value;
+      const username = document.getElementById("username").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const error = document.getElementById("login-error");
 
       const user = users.find(u => u.username.toLowerCase() === username && u.password === password);
 
       if (user) {
-        loginError.textContent = '';
-        loginContainer.classList.add('hidden');
-        welcomeContainer.classList.remove('hidden');
-        userNameSpan.textContent = user.username;
+        alert("Login bem-sucedido! ✅");
+        error.innerText = "";
       } else {
-        loginError.textContent = 'Usuário ou senha inválidos!';
+        error.innerText = "Usuário ou senha inválidos!";
       }
     }
 
-    // Função de cadastro
+    // Cadastro + limpa dados
     function register() {
-      const usernameInput = document.getElementById('register-username');
-      const passwordInput = document.getElementById('register-password');
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
+      const newUsername = document.getElementById("new-username").value.trim();
+      const newPassword = document.getElementById("new-password").value;
+      const error = document.getElementById("register-error");
 
-      if (username && password) {
-        if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
-          registerError.textContent = 'Usuário já existe!';
-          return;
-        }
-        users.push({ username, password });
-        localStorage.setItem('users', JSON.stringify(users));
-        registerError.textContent = '';
-        alert('Usuário cadastrado com sucesso!');
-
-        // Limpa os campos após cadastro
-        usernameInput.value = '';
-        passwordInput.value = '';
-
-        registerContainer.classList.add('hidden');
-        loginContainer.classList.remove('hidden');
-      } else {
-        registerError.textContent = 'Preencha todos os campos!';
+      if (!newUsername || !newPassword) {
+        error.innerText = "Preencha todos os campos!";
+        return;
       }
+
+      const exists = users.some(u => u.username.toLowerCase() === newUsername.toLowerCase());
+      if (exists) {
+        error.innerText = "Usuário já existe!";
+        return;
+      }
+
+      users.push({ username: newUsername, password: newPassword });
+      alert("Usuário cadastrado com sucesso! ✅");
+
+      // Limpa os campos
+      document.getElementById("new-username").value = "";
+      document.getElementById("new-password").value = "";
+
+      // Volta para tela de login
+      showLogin();
     }
 
-    // Eventos de clique
-    loginBtn.addEventListener('click', login);
-    registerBtn.addEventListener('click', register);
-    logoutBtn.addEventListener('click', () => {
-      welcomeContainer.classList.add('hidden');
-      loginContainer.classList.remove('hidden');
-    });
-    showRegister.addEventListener('click', e => {
-      e.preventDefault();
-      loginContainer.classList.add('hidden');
-      registerContainer.classList.remove('hidden');
-    });
-    showLogin.addEventListener('click', e => {
-      e.preventDefault();
-      registerContainer.classList.add('hidden');
-      loginContainer.classList.remove('hidden');
-    });
-
-    // Atalho Enter no login
-    document.getElementById('login-password').addEventListener('keypress', e => {
-      if (e.key === 'Enter') login();
-    });
-
-    // Atalho Enter no cadastro
-    document.getElementById('register-password').addEventListener('keypress', e => {
-      if (e.key === 'Enter') register();
+    // Enter funciona para login e cadastro
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        if (document.getElementById("login-container").style.display !== "none") {
+          login();
+        } else {
+          register();
+        }
+      }
     });
   </script>
 </body>
 </html>
-
-
-
