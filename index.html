@@ -6,382 +6,142 @@
   <title>AGAS Room Organizer</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Roboto', sans-serif; background: #ffffff; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-    .container { width: 850px; margin-top: 30px; padding: 20px 30px; background: #fff; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.1); position: relative; }
-    .logo { text-align: center; margin-bottom: 20px; }
-    .logo h1 { font-size: 48px; font-weight: 900; background: linear-gradient(90deg, #ff4fd8, #b34dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-    .logo span { font-size: 16px; color: #111; letter-spacing: 3px; }
-    .status-bar { position: absolute; top: 20px; left: 30px; font-size: 14px; font-weight: bold; color: #333; }
-    .logoff-btn { position: absolute; top: 20px; right: 30px; background: #f44336; color: white; border: none; border-radius: 8px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold; display: none; }
-    h2 { margin: 10px 0; font-size: 18px; font-weight: 700; }
-    .form-group { display: flex; gap: 15px; margin-bottom: 20px; }
-    .form-group input, .form-group select { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
-    .book-btn { margin-top: 10px; width: 100%; padding: 10px; border: none; border-radius: 8px; background: linear-gradient(90deg, #ff4fd8, #b34dff); color: white; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-    .book-btn:hover { opacity: 0.9; }
-    #loginSection .book-btn { padding: 8px; font-size: 13px; margin-top: 5px; }
-    .login-links { margin-top: 10px; }
-    .login-links a { display: block; margin-top: 5px; font-size: 13px; color: #b34dff; text-decoration: none; cursor: pointer; }
-    .login-links a:hover { text-decoration: underline; }
-    .tabs { display: flex; gap: 10px; margin: 15px 0; }
-    .tab { flex: 1; padding: 10px; border: none; border-radius: 8px; background: #eee; cursor: pointer; font-weight: bold; }
-    .tab.active { background: linear-gradient(90deg, #ff4fd8, #b34dff); color: #fff; }
-    .meeting-list, .users-list { margin-top: 20px; }
-    table { width: 100%; border-collapse: collapse; }
-    table th, table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
-    .action-btn { margin: 2px; padding: 5px 10px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .edit-btn { background: #4cafef; color: white; }
-    .delete-btn { background: #f44336; color: white; }
-    .reset-btn { background: #ff9800; color: white; }
-    .promote-btn { background: #9c27b0; color: white; }
-    .view-only { color: #666; font-size: 12px; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #ffffff;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 400px; background: #fff;
+      padding: 30px; border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #ff4fd8, #b34dff);
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%; padding: 10px;
+      margin: 8px 0; border: 1px solid #ccc;
+      border-radius: 8px; font-size: 16px;
+    }
+    button {
+      width: 100%; padding: 10px;
+      background: linear-gradient(90deg, #ff4fd8, #b34dff);
+      color: white; font-weight: bold;
+      border: none; border-radius: 8px;
+      cursor: pointer; font-size: 16px;
+    }
+    button:hover { opacity: 0.9; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">
-      <h1>AGAS</h1>
-      <span>ROOM ORGANIZER</span>
-    </div>
-    <div class="status-bar" id="statusBar"></div>
-    <button class="logoff-btn" id="logoffBtn">Logoff</button>
-
-    <!-- LOGIN -->
-    <div id="loginSection">
-      <h2>Login</h2>
-      <div class="form-group">
-        <input type="text" id="loginUsername" placeholder="Usuário">
-        <input type="password" id="loginPassword" placeholder="Senha">
-      </div>
-      <button class="book-btn" onclick="login()">Entrar</button>
-      <div class="login-links">
-        <a onclick="showRegister()">Criar Conta</a>
-        <a onclick="showRecovery()">Recuperar Senha</a>
-      </div>
-    </div>
-
-    <!-- REGISTRO -->
-    <div id="registerSection" style="display:none;">
-      <h2>Criar Conta</h2>
-      <div class="form-group">
-        <input type="text" id="regUsername" placeholder="Usuário">
-        <input type="password" id="regPassword" placeholder="Senha">
-      </div>
-      <div class="form-group">
-        <input type="text" id="regQuestion" placeholder="Pergunta de segurança">
-        <input type="text" id="regAnswer" placeholder="Resposta de segurança">
-      </div>
-      <button class="book-btn" onclick="register()">Registrar</button>
-      <button class="book-btn" style="background:#999;" onclick="showLogin()">Voltar</button>
-    </div>
-
-    <!-- RECUPERAR SENHA -->
-    <div id="recoverySection" style="display:none;">
-      <h2>Recuperar Senha</h2>
-      <input type="text" id="recUsername" placeholder="Usuário"><br><br>
-      <button class="book-btn" onclick="askQuestion()">Próximo</button>
-      <button class="book-btn" style="background:#999;" onclick="showLogin()">Voltar</button>
-      <div id="securityQuestion" style="margin-top:15px;display:none;"></div>
-    </div>
-
-    <!-- SISTEMA -->
-    <div id="mainSection" style="display:none;">
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('horarios')">Horários</button>
-        <button class="tab" id="usuariosTabBtn" style="display:none;" onclick="switchTab('usuarios')">Usuários</button>
-      </div>
-
-      <!-- HORARIOS -->
-      <div id="tabHorarios">
-        <h2>Reservar</h2>
-        <div class="form-group">
-          <input type="text" id="titulo" placeholder="Título da reunião">
-          <input type="date" id="data">
-          <select id="horaInicio"></select>
-          <select id="horaFim"></select>
-        </div>
-        <button class="book-btn" id="bookBtn">Agendar Reunião</button>
-        <div class="meeting-list">
-          <h3>Reuniões Agendadas</h3>
-          <table id="meetingTable">
-            <thead>
-              <tr>
-                <th>Título</th>
-                <th>Organizador</th>
-                <th>Data</th>
-                <th>Início</th>
-                <th>Fim</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- USUARIOS (só ADM) -->
-      <div id="tabUsuarios" style="display:none;">
-        <h2>Gerenciar Usuários</h2>
-        <div class="users-list">
-          <table id="usersTable">
-            <thead>
-              <tr>
-                <th>Usuário</th>
-                <th>Tipo</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+  <div class="container" id="login-container">
+    <h1>Login</h1>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Usuário" required>
+      <input type="password" id="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <p id="login-error" style="color: red; display: none;">Usuário ou senha inválidos!</p>
+    <p>Não tem conta? <a href="#" id="show-register">Cadastre-se</a></p>
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update, remove, onValue }
-      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+  <div class="container hidden" id="register-container">
+    <h1>Cadastro</h1>
+    <form id="register-form">
+      <input type="text" id="new-username" placeholder="Novo usuário" required>
+      <input type="password" id="new-password" placeholder="Nova senha" required>
+      <button type="submit">Cadastrar</button>
+    </form>
+    <p><a href="#" id="show-login">Já tem conta? Faça login</a></p>
+  </div>
 
-    // Configuração Firebase do seu projeto
-    const firebaseConfig = {
-      apiKey: "AIzaSyAso0mqf61OD9TZ-d99SyilxJZ6W8P9NRU",
-      authDomain: "agas-6fc66.firebaseapp.com",
-      databaseURL: "https://agas-6fc66-default-rtdb.firebaseio.com",
-      projectId: "agas-6fc66",
-      storageBucket: "agas-6fc66.appspot.com",
-      messagingSenderId: "156497731879",
-      appId: "1:156497731879:web:3adb0d6220ffa11aa1facf",
-      measurementId: "G-BVW4KL59Q0"
-    };
+  <div class="container hidden" id="welcome-container">
+    <h1>Bem-vindo!</h1>
+    <p id="welcome-message"></p>
+    <button id="logout-btn">Sair</button>
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  <script>
+    const loginContainer = document.getElementById('login-container');
+    const registerContainer = document.getElementById('register-container');
+    const welcomeContainer = document.getElementById('welcome-container');
 
-    let loggedUser = null;
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const loginError = document.getElementById('login-error');
+    const welcomeMessage = document.getElementById('welcome-message');
 
-    // Cria ADM fixo
-    function ensureAdmin() {
-      get(ref(db, "usuarios/adm")).then(snap => {
-        if (!snap.exists()) {
-          set(ref(db, "usuarios/adm"), {
-            username: "adm",
-            password: "1234",
-            question: "Padrão",
-            answer: "1234",
-            isAdmin: true
-          });
-        }
-      });
-    }
-    ensureAdmin();
+    const showRegister = document.getElementById('show-register');
+    const showLogin = document.getElementById('show-login');
+    const logoutBtn = document.getElementById('logout-btn');
 
-    // ---------- Reservas ----------
-    const horarios = [];
-    for (let h = 7; h <= 18; h++) {
-      horarios.push((h < 10 ? "0"+h : h)+":00");
-      horarios.push((h < 10 ? "0"+h : h)+":30");
-    }
-    const horaInicioSelect = document.getElementById('horaInicio');
-    const horaFimSelect = document.getElementById('horaFim');
-    horarios.forEach(h => {
-      horaInicioSelect.add(new Option(h, h));
-      horaFimSelect.add(new Option(h, h));
-    });
-    const tableBody = document.querySelector("#meetingTable tbody");
+    // Salva usuário
+    registerForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const newUser = document.getElementById('new-username').value.trim().toLowerCase();
+      const newPass = document.getElementById('new-password').value;
 
-    function renderReservas() {
-      onValue(ref(db, "reservas"), snap => {
-        tableBody.innerHTML = "";
-        const data = snap.val() || {};
-        Object.keys(data).forEach(id => {
-          const r = data[id];
-          const row = document.createElement("tr");
-          let actionBtns = "";
-          if (r.organizador === loggedUser || loggedUser === "adm") {
-            actionBtns = `
-              <button class="action-btn edit-btn" onclick="editarReserva('${id}')">Editar</button>
-              <button class="action-btn delete-btn" onclick="excluirReserva('${id}')">Excluir</button>
-            `;
-          } else {
-            actionBtns = `<span class="view-only">Visualização</span>`;
-          }
-          row.innerHTML = `
-            <td>${r.titulo}</td>
-            <td>${r.organizador}</td>
-            <td>${r.data}</td>
-            <td>${r.inicio}</td>
-            <td>${r.fim}</td>
-            <td>${actionBtns}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      });
-    }
+      localStorage.setItem('user', newUser);
+      localStorage.setItem('pass', newPass);
 
-    document.getElementById("bookBtn").addEventListener("click", () => {
-      const titulo = document.getElementById("titulo").value;
-      const data = document.getElementById("data").value;
-      const inicio = horaInicioSelect.value;
-      const fim = horaFimSelect.value;
-      if (!titulo || !data || !inicio || !fim) return alert("Preencha todos os campos!");
-      if (horarios.indexOf(inicio) >= horarios.indexOf(fim)) return alert("Fim deve ser depois do início!");
-      const id = Date.now().toString();
-      set(ref(db, "reservas/"+id), { titulo, organizador: loggedUser, data, inicio, fim });
+      // Limpa os campos após cadastro
+      registerForm.reset();
+
+      alert('Usuário cadastrado com sucesso! Faça login.');
+      registerContainer.classList.add('hidden');
+      loginContainer.classList.remove('hidden');
     });
 
-    window.excluirReserva = id => remove(ref(db,"reservas/"+id));
-    window.editarReserva = id => {
-      get(ref(db,"reservas/"+id)).then(snap => {
-        const r = snap.val();
-        document.getElementById("titulo").value = r.titulo;
-        document.getElementById("data").value = r.data;
-        horaInicioSelect.value = r.inicio;
-        horaFimSelect.value = r.fim;
-        remove(ref(db,"reservas/"+id));
-      });
-    };
+    // Login
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
 
-    // ---------- Login ----------
-    function login() {
-      const username = document.getElementById("loginUsername").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
-      get(ref(db, "usuarios/"+username)).then(snap => {
-        if (!snap.exists()) return alert("Usuário não encontrado!");
-        const user = snap.val();
-        if (user.password !== password) return alert("Senha incorreta!");
-        loggedUser = username;
-        showMain(user.isAdmin);
-      });
-    }
-    window.login = login;
+      const storedUser = localStorage.getItem('user');
+      const storedPass = localStorage.getItem('pass');
 
-    function register() {
-      const username = document.getElementById("regUsername").value.trim();
-      const password = document.getElementById("regPassword").value.trim();
-      const question = document.getElementById("regQuestion").value.trim();
-      const answer = document.getElementById("regAnswer").value.trim();
-      if (!username || !password || !question || !answer) return alert("Preencha todos os campos!");
-      get(ref(db, "usuarios/"+username)).then(snap => {
-        if (snap.exists()) return alert("Usuário já existe!");
-        set(ref(db,"usuarios/"+username), { username, password, question, answer, isAdmin: false })
-          .then(()=>{ alert("Usuário registrado com sucesso!"); showLogin(); });
-      });
-    }
-    window.register = register;
+      if (username === storedUser && password === storedPass) {
+        loginContainer.classList.add('hidden');
+        welcomeContainer.classList.remove('hidden');
+        welcomeMessage.textContent = "Olá, " + username + "!";
+        loginError.style.display = "none";
 
-    function askQuestion() {
-      const username = document.getElementById("recUsername").value.trim();
-      get(ref(db,"usuarios/"+username)).then(snap=>{
-        if (!snap.exists()) return alert("Usuário não encontrado!");
-        const user = snap.val();
-        const div = document.getElementById("securityQuestion");
-        div.style.display="block";
-        div.innerHTML = `
-          <p>${user.question}</p>
-          <input type="text" id="recAnswer" placeholder="Resposta"><br><br>
-          <input type="password" id="newPassword" placeholder="Nova senha"><br><br>
-          <button class="book-btn" onclick="resetPassword('${username}')">Redefinir Senha</button>
-        `;
-      });
-    }
-    window.askQuestion = askQuestion;
+        // Limpa os campos após login
+        loginForm.reset();
+      } else {
+        loginError.style.display = "block";
+      }
+    });
 
-    function resetPassword(username) {
-      get(ref(db,"usuarios/"+username)).then(snap=>{
-        if (!snap.exists()) return;
-        const user = snap.val();
-        const answer = document.getElementById("recAnswer").value.trim();
-        const newPass = document.getElementById("newPassword").value.trim();
-        if (answer !== user.answer) return alert("Resposta incorreta!");
-        if (!newPass) return alert("Digite uma nova senha!");
-        update(ref(db,"usuarios/"+username),{ password: newPass })
-          .then(()=>{ alert("Senha redefinida!"); showLogin(); });
-      });
-    }
-    window.resetPassword = resetPassword;
+    // Logout
+    logoutBtn.addEventListener('click', function () {
+      welcomeContainer.classList.add('hidden');
+      loginContainer.classList.remove('hidden');
+    });
 
-    function logoff() { loggedUser=null; showLogin(); }
-    document.getElementById("logoffBtn").onclick = logoff;
+    // Alternar telas
+    showRegister.addEventListener('click', function (e) {
+      e.preventDefault();
+      loginContainer.classList.add('hidden');
+      registerContainer.classList.remove('hidden');
+    });
 
-    function showMain(isAdmin) {
-      document.getElementById("loginSection").style.display="none";
-      document.getElementById("registerSection").style.display="none";
-      document.getElementById("recoverySection").style.display="none";
-      document.getElementById("mainSection").style.display="block";
-      document.getElementById("logoffBtn").style.display="inline-block";
-      document.getElementById("statusBar").innerText="Usuário: "+loggedUser+(isAdmin?" (ADM)":"");
-      document.getElementById("usuariosTabBtn").style.display=isAdmin?"inline-block":"none";
-      renderReservas(); renderUsers();
-    }
-
-    function showLogin(){ 
-      document.getElementById("loginSection").style.display="block";
-      document.getElementById("registerSection").style.display="none";
-      document.getElementById("recoverySection").style.display="none";
-      document.getElementById("mainSection").style.display="none";
-      document.getElementById("logoffBtn").style.display="none";
-      document.getElementById("statusBar").innerText="";
-    }
-    window.showLogin = showLogin;
-    window.showRegister = ()=>{ document.getElementById("loginSection").style.display="none"; document.getElementById("registerSection").style.display="block"; }
-    window.showRecovery = ()=>{ document.getElementById("loginSection").style.display="none"; document.getElementById("recoverySection").style.display="block"; document.getElementById("securityQuestion").style.display="none"; }
-
-    function switchTab(tab) {
-      document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
-      if (tab==="horarios"){ document.querySelector("#tabHorarios").style.display="block"; document.querySelector("#tabUsuarios").style.display="none"; document.querySelectorAll(".tab")[0].classList.add("active"); }
-      else { document.querySelector("#tabHorarios").style.display="none"; document.querySelector("#tabUsuarios").style.display="block"; document.querySelectorAll(".tab")[1].classList.add("active"); }
-    }
-    window.switchTab = switchTab;
-
-    // ---------- Usuários ----------
-    function renderUsers() {
-      onValue(ref(db,"usuarios"), snap=>{
-        const tbody = document.querySelector("#usersTable tbody");
-        tbody.innerHTML="";
-        const data = snap.val()||{};
-        Object.keys(data).forEach(u=>{
-          const user = data[u];
-          tbody.innerHTML += `
-            <tr>
-              <td>${user.username}</td>
-              <td>${user.isAdmin?"ADM":"Usuário"}</td>
-              <td>
-                ${user.username!=="adm"?`
-                  <button class="action-btn delete-btn" onclick="deleteUser('${user.username}')">Excluir</button>
-                  <button class="action-btn reset-btn" onclick="forceReset('${user.username}')">Redefinir Senha</button>
-                  <button class="action-btn promote-btn" onclick="toggleAdmin('${user.username}',${user.isAdmin})">${user.isAdmin?"Rebaixar":"Promover"} ADM</button>
-                `:`<span class="view-only">Protegido</span>`}
-              </td>
-            </tr>`;
-        });
-      });
-    }
-
-    window.deleteUser = username => {
-      if (loggedUser!=="adm") return alert("Apenas ADM pode excluir!");
-      remove(ref(db,"usuarios/"+username));
-      remove(ref(db,"reservas")).then(()=>{
-        // apagar reservas desse usuário
-      });
-    };
-
-    window.forceReset = username => {
-      if (loggedUser!=="adm") return alert("Apenas ADM pode redefinir!");
-      const newPass = prompt("Nova senha para "+username+":");
-      if (!newPass) return;
-      update(ref(db,"usuarios/"+username),{ password:newPass });
-    };
-
-    window.toggleAdmin = (username,isAdmin)=>{
-      if (loggedUser!=="adm") return alert("Apenas ADM pode promover!");
-      update(ref(db,"usuarios/"+username),{ isAdmin:!isAdmin });
-    };
-
-    showLogin();
+    showLogin.addEventListener('click', function (e) {
+      e.preventDefault();
+      registerContainer.classList.add('hidden');
+      loginContainer.classList.remove('hidden');
+    });
   </script>
 </body>
 </html>
-
-
-
