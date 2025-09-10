@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recuperar Senha - AGAS</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recuperar Senha - AGAS Room Organizer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <main>
     <h1>Recuperar Senha</h1>
-    <p>Digite seu e-mail e enviaremos um link para redefinir sua senha.</p>
-
-    <form id="resetForm">
-      <label for="resetEmail">E-mail</label>
-      <input type="email" id="resetEmail" placeholder="Digite seu e-mail" required>
-      <button type="submit">Enviar Link</button>
+    <form onsubmit="event.preventDefault(); resetPassword(document.getElementById('email').value);">
+      <label for="email">Digite seu e-mail</label>
+      <input type="email" id="email" required />
+      <button type="submit">Enviar link de recuperação</button>
     </form>
-
-    <div class="links">
-      <a href="index.html">Voltar ao login</a>
-    </div>
-  </div>
+    <p><a href="index.html">Voltar ao login</a></p>
+  </main>
 
   <script type="module" src="script.js"></script>
 </body>
