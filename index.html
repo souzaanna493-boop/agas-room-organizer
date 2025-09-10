@@ -15,15 +15,25 @@
     .logoff-btn { position: absolute; top: 20px; right: 30px; background: #f44336; color: white; border: none; border-radius: 8px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold; display: none; }
     h2 { margin: 10px 0; font-size: 18px; font-weight: 700; }
     .form-group { display: flex; gap: 15px; margin-bottom: 20px; }
-    .form-group input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+    .form-group input, .form-group select { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
     .book-btn { margin-top: 10px; width: 100%; padding: 10px; border: none; border-radius: 8px; background: linear-gradient(90deg, #ff4fd8, #b34dff); color: white; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
     .book-btn:hover { opacity: 0.9; }
+    #loginSection .book-btn { padding: 8px; font-size: 13px; margin-top: 5px; }
     .login-links { margin-top: 10px; }
     .login-links a { display: block; margin-top: 5px; font-size: 13px; color: #b34dff; text-decoration: none; cursor: pointer; }
     .login-links a:hover { text-decoration: underline; }
-    .home { display: none; text-align: center; margin-top: 50px; }
-    .home h1 { font-size: 28px; color: #8b34ff; }
-    .home p { font-size: 18px; margin: 15px 0; }
+    .tabs { display: flex; gap: 10px; margin: 15px 0; }
+    .tab { flex: 1; padding: 10px; border: none; border-radius: 8px; background: #eee; cursor: pointer; font-weight: bold; }
+    .tab.active { background: linear-gradient(90deg, #ff4fd8, #b34dff); color: #fff; }
+    .meeting-list, .users-list { margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    table th, table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+    .action-btn { margin: 2px; padding: 5px 10px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .edit-btn { background: #4cafef; color: white; }
+    .delete-btn { background: #f44336; color: white; }
+    .reset-btn { background: #ff9800; color: white; }
+    .promote-btn { background: #9c27b0; color: white; }
+    .view-only { color: #666; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -33,7 +43,7 @@
       <span>ROOM ORGANIZER</span>
     </div>
     <div class="status-bar" id="statusBar"></div>
-    <button class="logoff-btn" id="logoffBtn" onclick="logout()">Sair</button>
+    <button class="logoff-btn" id="logoffBtn">Logoff</button>
 
     <!-- LOGIN -->
     <div id="loginSection">
@@ -45,6 +55,7 @@
       <button class="book-btn" onclick="login()">Entrar</button>
       <div class="login-links">
         <a onclick="showRegister()">Criar Conta</a>
+        <a onclick="showRecovery()">Recuperar Senha</a>
       </div>
     </div>
 
@@ -55,81 +66,124 @@
         <input type="text" id="regUsername" placeholder="Usuário">
         <input type="password" id="regPassword" placeholder="Senha">
       </div>
+      <div class="form-group">
+        <input type="text" id="regQuestion" placeholder="Pergunta de segurança">
+        <input type="text" id="regAnswer" placeholder="Resposta de segurança">
+      </div>
       <button class="book-btn" onclick="register()">Registrar</button>
       <button class="book-btn" style="background:#999;" onclick="showLogin()">Voltar</button>
     </div>
 
-    <!-- HOME (aparece após login) -->
-    <div id="homeSection" class="home">
-      <h1>🎉 Bem-vindo ao AGAS Room Organizer!</h1>
-      <p>Você fez login com sucesso.</p>
+    <!-- RECUPERAR SENHA -->
+    <div id="recoverySection" style="display:none;">
+      <h2>Recuperar Senha</h2>
+      <input type="text" id="recUsername" placeholder="Usuário"><br><br>
+      <button class="book-btn" onclick="askQuestion()">Próximo</button>
+      <button class="book-btn" style="background:#999;" onclick="showLogin()">Voltar</button>
+      <div id="securityQuestion" style="margin-top:15px;display:none;"></div>
+    </div>
+
+    <!-- SISTEMA -->
+    <div id="mainSection" style="display:none;">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('horarios')">Horários</button>
+        <button class="tab" id="usuariosTabBtn" style="display:none;" onclick="switchTab('usuarios')">Usuários</button>
+      </div>
+      <div id="tabHorarios"> ... </div>
+      <div id="tabUsuarios" style="display:none;"> ... </div>
     </div>
   </div>
 
-  <script>
-    // Banco de usuários em memória (não persiste)
-    let users = { "adm": "1234" };
-    let currentUser = null;
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, set, get, update, remove, onValue }
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-    // Login
-    function login() {
-      const username = document.getElementById("loginUsername").value.trim().toLowerCase();
-      const password = document.getElementById("loginPassword").value.trim();
+    const firebaseConfig = { 
+      apiKey: "AIzaSyAso0mqf61OD9TZ-d99SyilxJZ6W8P9NRU",
+      authDomain: "agas-6fc66.firebaseapp.com",
+      databaseURL: "https://agas-6fc66-default-rtdb.firebaseio.com",
+      projectId: "agas-6fc66",
+      storageBucket: "agas-6fc66.appspot.com",
+      messagingSenderId: "156497731879",
+      appId: "1:156497731879:web:3adb0d6220ffa11aa1facf",
+      measurementId: "G-BVW4KL59Q0"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-      if (users[username] && users[username] === password) {
-        currentUser = username;
-        document.getElementById("statusBar").innerText = "Usuário: " + username;
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("registerSection").style.display = "none";
-        document.getElementById("homeSection").style.display = "block";
-        document.getElementById("logoffBtn").style.display = "inline-block";
-      } else {
-        alert("Usuário ou senha inválidos!");
-      }
+    let loggedUser = null;
+
+    // Garantir ADM
+    function ensureAdmin() {
+      get(ref(db, "usuarios/adm")).then(snap => {
+        if (!snap.exists()) {
+          set(ref(db, "usuarios/adm"), {
+            username: "adm",
+            password: "1234",
+            question: "Padrão",
+            answer: "1234",
+            isAdmin: true
+          });
+        }
+      });
     }
+    ensureAdmin();
 
-    // Enter funciona no login
-    document.getElementById("loginPassword").addEventListener("keypress", e => {
+    // LOGIN (case-insensitive + Enter)
+    function login() {
+      const usernameInput = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const usernameKey = usernameInput.toLowerCase();
+
+      get(ref(db, "usuarios/" + usernameKey)).then(snap => {
+        if (!snap.exists()) return alert("Usuário não encontrado!");
+        const user = snap.val();
+        if (user.password !== password) return alert("Senha incorreta!");
+        loggedUser = user.username;
+        showMain(!!user.isAdmin);
+      });
+    }
+    window.login = login;
+
+    document.getElementById("loginPassword").addEventListener("keypress", (e) => {
       if (e.key === "Enter") login();
     });
 
-    // Cadastro
+    // REGISTRO (limpa após cadastro)
     function register() {
-      const username = document.getElementById("regUsername").value.trim().toLowerCase();
-      const password = document.getElementById("regPassword").value.trim();
+      const regUsername = document.getElementById("regUsername");
+      const regPassword = document.getElementById("regPassword");
+      const regQuestion = document.getElementById("regQuestion");
+      const regAnswer = document.getElementById("regAnswer");
 
-      if (!username || !password) return alert("Preencha todos os campos!");
-      if (users[username]) return alert("Usuário já existe!");
+      const usernameOriginal = regUsername.value.trim();
+      const usernameKey = usernameOriginal.toLowerCase();
 
-      users[username] = password;
-      alert("Usuário cadastrado com sucesso!");
+      if (!usernameOriginal || !regPassword.value.trim() || !regQuestion.value.trim() || !regAnswer.value.trim()) {
+        return alert("Preencha todos os campos!");
+      }
 
-      // Limpa campos
-      document.getElementById("regUsername").value = "";
-      document.getElementById("regPassword").value = "";
-
-      showLogin();
+      get(ref(db, "usuarios/" + usernameKey)).then(snap => {
+        if (snap.exists()) return alert("Usuário já existe!");
+        set(ref(db, "usuarios/" + usernameKey), {
+          username: usernameOriginal,
+          password: regPassword.value.trim(),
+          question: regQuestion.value.trim(),
+          answer: regAnswer.value.trim(),
+          isAdmin: false
+        }).then(() => {
+          alert("Usuário registrado!");
+          regUsername.value = "";
+          regPassword.value = "";
+          regQuestion.value = "";
+          regAnswer.value = "";
+          showLogin();
+        });
+      });
     }
-
-    // Alternar telas
-    function showLogin() {
-      document.getElementById("loginSection").style.display = "block";
-      document.getElementById("registerSection").style.display = "none";
-      document.getElementById("homeSection").style.display = "none";
-      document.getElementById("logoffBtn").style.display = "none";
-      document.getElementById("statusBar").innerText = "";
-    }
-
-    function showRegister() {
-      document.getElementById("loginSection").style.display = "none";
-      document.getElementById("registerSection").style.display = "block";
-    }
-
-    // Logoff
-    function logout() {
-      currentUser = null;
-      showLogin();
-    }
+    window.register = register;
   </script>
 </body>
 </html>
