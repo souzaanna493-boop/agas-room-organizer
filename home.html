@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGAS - Home</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGAS Room Organizer - Home</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>AGAS - Room Organizer</h1>
-    <p id="welcomeUser">🎉 Bem-vindo!</p>
-    <button id="logoffBtn" class="btn-logout">Logoff</button>
+  <header>
+    <h1>AGAS Room Organizer</h1>
+    <button onclick="logoff()">Sair</button>
+  </header>
 
-    <!-- Abas -->
-    <div class="tabs">
-      <button id="horariosTab" class="tab active">Horários</button>
-      <button id="usuariosTab" class="tab">Usuários</button>
-    </div>
+  <main>
+    <!-- Formulário para agendar reunião -->
+    <section>
+      <h2>Agendar Reunião</h2>
+      <form onsubmit="event.preventDefault(); 
+                      criarReuniao(
+                        document.getElementById('titulo').value,
+                        document.getElementById('data').value,
+                        document.getElementById('horaInicio').value,
+                        document.getElementById('horaFim').value,
+                        JSON.parse(localStorage.getItem('usuarioLogado')).usuario
+                      ); 
+                      this.reset();">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" required />
 
-    <!-- Seção de Reuniões -->
-    <section id="horariosSection" class="tab-content active">
-      <h2>Reservar Sala</h2>
-      <form id="reservaForm">
-        <input type="text" id="titulo" placeholder="Título da reunião" required>
-        <input type="date" id="data" required>
-        <select id="horaInicio">
-          <option>07:00</option>
-          <option>07:30</option>
-          <option>08:00</option>
-        </select>
-        <select id="horaFim">
-          <option>07:30</option>
-          <option>08:00</option>
-          <option>08:30</option>
-        </select>
+        <label for="data">Data</label>
+        <input type="date" id="data" required />
+
+        <label for="horaInicio">Hora início</label>
+        <input type="time" id="horaInicio" required />
+
+        <label for="horaFim">Hora fim</label>
+        <input type="time" id="horaFim" required />
+
         <button type="submit">Agendar</button>
       </form>
+    </section>
 
+    <!-- Lista de reuniões -->
+    <section>
       <h2>Reuniões Agendadas</h2>
-      <table>
+      <table border="1">
         <thead>
           <tr>
             <th>Título</th>
@@ -49,44 +55,14 @@
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="listaReunioes"></tbody>
+        <tbody id="tabela-reunioes">
+          <!-- preenchido dinamicamente -->
+        </tbody>
       </table>
     </section>
+  </main>
 
-    <!-- Seção de Usuários -->
-    <section id="usuariosSection" class="tab-content">
-      <h2>Usuários</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Usuário</th>
-            <th>Email</th>
-            <th>Tipo</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="listaUsuarios"></tbody>
-      </table>
-    </section>
-  </div>
-
+  <!-- Script -->
   <script type="module" src="script.js"></script>
-  <script>
-    // Alternar abas
-    document.getElementById("horariosTab").addEventListener("click", () => {
-      document.getElementById("horariosSection").classList.add("active");
-      document.getElementById("usuariosSection").classList.remove("active");
-      document.getElementById("horariosTab").classList.add("active");
-      document.getElementById("usuariosTab").classList.remove("active");
-    });
-
-    document.getElementById("usuariosTab").addEventListener("click", () => {
-      document.getElementById("usuariosSection").classList.add("active");
-      document.getElementById("horariosSection").classList.remove("active");
-      document.getElementById("usuariosTab").classList.add("active");
-      document.getElementById("horariosTab").classList.remove("active");
-    });
-  </script>
 </body>
 </html>
-
