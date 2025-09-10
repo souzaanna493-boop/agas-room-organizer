@@ -8,38 +8,33 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="logo">AGAS</h1>
-    <p class="subtitle">ROOM ORGANIZER</p>
-
+    <h1>AGAS - Room Organizer</h1>
     <p id="welcomeUser">🎉 Bem-vindo!</p>
     <button id="logoffBtn" class="btn-logout">Logoff</button>
 
     <!-- Abas -->
     <div class="tabs">
-      <button class="tab active" id="horariosTabBtn">Horários</button>
-      <button class="tab" id="usuariosTab">Usuários</button>
+      <button id="horariosTab" class="tab active">Horários</button>
+      <button id="usuariosTab" class="tab">Usuários</button>
     </div>
 
-    <!-- Aba Horários -->
-    <div id="horariosSection" class="tab-content active">
-      <h2>Reservar</h2>
-      <form id="reuniaoForm">
-        <input type="text" id="tituloReuniao" placeholder="Título da reunião" required>
-        <input type="date" id="dataReuniao" required>
+    <!-- Seção de Reuniões -->
+    <section id="horariosSection" class="tab-content active">
+      <h2>Reservar Sala</h2>
+      <form id="reservaForm">
+        <input type="text" id="titulo" placeholder="Título da reunião" required>
+        <input type="date" id="data" required>
         <select id="horaInicio">
           <option>07:00</option>
           <option>07:30</option>
           <option>08:00</option>
-          <option>08:30</option>
-          <option>09:00</option>
         </select>
         <select id="horaFim">
           <option>07:30</option>
           <option>08:00</option>
           <option>08:30</option>
-          <option>09:00</option>
         </select>
-        <button type="submit" class="btn-primary">Agendar Reunião</button>
+        <button type="submit">Agendar</button>
       </form>
 
       <h2>Reuniões Agendadas</h2>
@@ -56,31 +51,32 @@
         </thead>
         <tbody id="listaReunioes"></tbody>
       </table>
-    </div>
+    </section>
 
-    <!-- Aba Usuários -->
-    <div id="usuariosSection" class="tab-content">
-      <h2>Gerenciar Usuários</h2>
+    <!-- Seção de Usuários -->
+    <section id="usuariosSection" class="tab-content">
+      <h2>Usuários</h2>
       <table>
         <thead>
           <tr>
             <th>Usuário</th>
+            <th>Email</th>
             <th>Tipo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody id="listaUsuarios"></tbody>
       </table>
-    </div>
+    </section>
   </div>
 
   <script type="module" src="script.js"></script>
   <script>
-    // Controle das abas
-    document.getElementById("horariosTabBtn").addEventListener("click", () => {
+    // Alternar abas
+    document.getElementById("horariosTab").addEventListener("click", () => {
       document.getElementById("horariosSection").classList.add("active");
       document.getElementById("usuariosSection").classList.remove("active");
-      document.getElementById("horariosTabBtn").classList.add("active");
+      document.getElementById("horariosTab").classList.add("active");
       document.getElementById("usuariosTab").classList.remove("active");
     });
 
@@ -88,8 +84,9 @@
       document.getElementById("usuariosSection").classList.add("active");
       document.getElementById("horariosSection").classList.remove("active");
       document.getElementById("usuariosTab").classList.add("active");
-      document.getElementById("horariosTabBtn").classList.remove("active");
+      document.getElementById("horariosTab").classList.remove("active");
     });
   </script>
 </body>
 </html>
+
