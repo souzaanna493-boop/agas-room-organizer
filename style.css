@@ -1,80 +1,78 @@
-/* =========================
-   ESTILO GLOBAL
-========================= */
-body {
-  font-family: 'Arial', sans-serif;
-  background: #f7f7f7;
+/* Reset básico */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f4f6f9;
+  color: #333;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
+  padding: 40px 20px;
 }
 
-.container, #loginContainer, #cadastroContainer, #recuperarContainer, #appContainer {
-  background: white;
-  margin-top: 40px;
+main {
+  background: #fff;
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 }
 
-/* =========================
-   TÍTULO
-========================= */
-h1 {
-  font-size: 36px;
-  margin: 0;
-  font-weight: bold;
-  background: linear-gradient(90deg, #ff4de1, #9b4dff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-h2 {
-  font-size: 14px;
-  font-weight: normal;
-  color: #444;
-  letter-spacing: 3px;
+h1, h2 {
   margin-bottom: 20px;
+  text-align: center;
+  color: #2c3e50;
 }
 
-/* =========================
-   FORMULÁRIOS
-========================= */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
 input {
-  width: 90%;
-  padding: 12px;
-  margin: 8px 0;
-  border: 1px solid #ddd;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 15px;
+  font-size: 14px;
+  transition: border 0.3s;
+}
+
+input:focus {
+  border-color: #3498db;
+  outline: none;
 }
 
 button {
-  width: 95%;
-  padding: 12px;
-  background: linear-gradient(90deg, #ff4de1, #9b4dff);
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
+  padding: 10px;
+  background: #3498db;
+  color: #fff;
   border: none;
   border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
-  margin-top: 10px;
-  transition: 0.3s;
+  transition: background 0.3s;
 }
 
 button:hover {
-  opacity: 0.9;
+  background: #2980b9;
 }
 
+/* Links */
 a {
-  color: #007bff;
+  color: #3498db;
   text-decoration: none;
   font-size: 14px;
 }
@@ -83,32 +81,47 @@ a:hover {
   text-decoration: underline;
 }
 
-/* =========================
-   ABAS
-========================= */
-.aba {
-  margin-top: 20px;
+p {
+  margin-top: 10px;
+  text-align: center;
 }
 
-#abaHorarios, #abaUsuarios {
-  width: 48%;
-  display: inline-block;
-  padding: 10px;
-  margin: 5px;
-  border-radius: 6px;
-  background: #eee;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
+/* Cabeçalho no painel */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #3498db;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-#abaHorarios:hover, #abaUsuarios:hover {
-  background: #ddd;
+header h1 {
+  margin: 0;
+  font-size: 20px;
 }
 
-/* =========================
-   TABELAS
-========================= */
+header button {
+  background: #e74c3c;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+header button:hover {
+  background: #c0392b;
+}
+
+/* Painel */
+section {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -123,40 +136,16 @@ table th, table td {
 }
 
 table th {
-  background: #f3f3f3;
-  font-weight: bold;
-}
-
-/* =========================
-   BOTÕES DE AÇÃO
-========================= */
-.btn-excluir {
-  background: #f44336;
-}
-
-.btn-resetar {
-  background: #ff9800;
-}
-
-.btn-promover {
-  background: #4caf50;
-}
-
-.btn-editar {
-  background: #2196f3;
-}
-
-.btn-excluir, .btn-resetar, .btn-promover, .btn-editar {
+  background: #3498db;
   color: white;
-  padding: 6px 10px;
-  margin: 2px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
 }
 
-.btn-excluir:hover { background: #d32f2f; }
-.btn-resetar:hover { background: #e68900; }
-.btn-promover:hover { background: #388e3c; }
-.btn-editar:hover { background: #1976d2; }
+table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+table button {
+  margin: 0 3px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
