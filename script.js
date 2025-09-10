@@ -8,7 +8,7 @@ import {
   getFirestore, doc, setDoc, getDoc, query, where, collection, getDocs 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Configuração Firebase (substitua pelo seu config)
+// Configuração Firebase (substitua pelo seu config do console Firebase)
 const firebaseConfig = {
   apiKey: "SUA_API_KEY",
   authDomain: "SEU_PROJETO.firebaseapp.com",
@@ -18,7 +18,7 @@ const firebaseConfig = {
   appId: "SUA_APP_ID"
 };
 
-// Inicializar
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -33,27 +33,30 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
   try {
     let emailToLogin = identifier;
 
-    // Verifica se o input é email ou usuario
+    // Verifica se é email válido
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(identifier)) {
-      // Buscar pelo campo "usuario" no Firestore
-      const q = query(collection(db, "usuarios"), where("usuario", "==", identifier));
+      // Se for "usuário", converte para minúsculo
+      const usernameLower = identifier.toLowerCase();
+
+      // Buscar no Firestore pelo campo "usuario"
+      const q = query(collection(db, "usuarios"), where("usuario", "==", usernameLower));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0].data();
-        emailToLogin = userDoc.email; // pega email do usuário
+        emailToLogin = userDoc.email; // pega email do Firestore
       } else {
         alert("Usuário não encontrado!");
         return;
       }
     }
 
-    // Faz login com email encontrado
+    // Faz login com email e senha
     const userCredential = await signInWithEmailAndPassword(auth, emailToLogin, password);
     const user = userCredential.user;
 
-    // Busca tipo do usuário no Firestore
+    // Busca dados extras do Firestore
     const userDoc = await getDoc(doc(db, "usuarios", user.uid));
     if (!userDoc.exists()) {
       alert("Usuário sem perfil definido!");
@@ -63,12 +66,12 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
     const userData = userDoc.data();
     localStorage.setItem("userData", JSON.stringify(userData));
 
-    // Redireciona para home
+    // Vai para home
     window.location.href = "home.html";
 
   } catch (error) {
-    console.error(error);
-    alert("Erro no login: " + error.message);
+    console.error("Erro no login:", error);
+    alert("Erro ao fazer login: " + error.message);
   }
 });
 
@@ -76,7 +79,7 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
 document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const usuario = document.getElementById("registerUser").value.trim();
+  const usuario = document.getElementById("registerUser").value.trim().toLowerCase(); // salva sempre em minúsculo
   const email = document.getElementById("registerEmail").value.trim();
   const senha = document.getElementById("registerPassword").value;
 
@@ -87,7 +90,7 @@ document.getElementById("registerForm")?.addEventListener("submit", async (e) =>
     await setDoc(doc(db, "usuarios", user.uid), {
       usuario: usuario,
       email: email,
-      tipo: "USER" // por padrão, novo cadastro é usuário comum
+      tipo: "USER" // padrão: usuário comum
     });
 
     alert("Usuário cadastrado com sucesso!");
