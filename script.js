@@ -1,216 +1,45 @@
-// ===============================
-// Configuração do Firebase
-// ===============================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "agas-rooms-organizer.firebaseapp.com",
-  projectId: "agas-rooms-organizer",
-  storageBucket: "agas-rooms-organizer.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SUA_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// ===============================
-// Login
-// ===============================
-async function loginUser(username, password) {
-  const ref = doc(db, "usuarios", username);
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) {
-    alert("Usuário não encontrado!");
-    return;
-  }
-
-  const data = snap.data();
-  if (data.senha !== password) {
-    alert("Senha incorreta!");
-    return;
-  }
-
-  // Salva sessão temporária
-  sessionStorage.setItem("usuario", JSON.stringify(data));
-
-  // Redireciona para home
-  window.location.href = "home.html";
-}
-
+// ===== LOGIN =====
 document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  await loginUser(username, password);
-});
+    e.preventDefault();
 
-// ===============================
-// Carregar Home
-// ===============================
-async function carregarHome() {
-  const user = JSON.parse(sessionStorage.getItem("usuario"));
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
+    const inputUserOrEmail = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
 
-  document.getElementById("welcomeUser").textContent = `🎉 Bem-vindo ${user.usuario} (${user.tipo})`;
+    try {
+        let emailToLogin = inputUserOrEmail;
 
-  if (user.tipo === "ADM") {
-    document.getElementById("usuariosTab").style.display = "inline-block";
-    document.querySelectorAll(".admin-only").forEach(btn => btn.style.display = "inline-block");
-  } else {
-    document.getElementById("usuariosTab").style.display = "none";
-    document.querySelectorAll(".admin-only").forEach(btn => btn.style.display = "none");
-  }
+        // Verifica se é um email válido
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(inputUserOrEmail)) {
+            // Se não for email, procura pelo "usuario" no Firestore
+            const q = query(collection(db, "usuarios"), where("usuario", "==", inputUserOrEmail));
+            const querySnapshot = await getDocs(q);
 
-  await carregarReunioes();
-  if (user.tipo === "ADM") await carregarUsuarios();
-}
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                emailToLogin = userDoc.email; // pega o email do Firestore
+            } else {
+                alert("Usuário não encontrado!");
+                return;
+            }
+        }
 
-document.getElementById("logoffBtn")?.addEventListener("click", () => {
-  sessionStorage.clear();
-  window.location.href = "index.html";
-});
+        // Faz login com o email encontrado e senha
+        const userCredential = await signInWithEmailAndPassword(auth, emailToLogin, password);
+        const user = userCredential.user;
 
-// ===============================
-// Reuniões
-// ===============================
-async function agendarReuniao(titulo, data, inicio, fim) {
-  const user = JSON.parse(sessionStorage.getItem("usuario"));
-  if (!user) return;
+        // Buscar os dados no Firestore para saber se é ADM ou comum
+        const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+        const userData = userDoc.data();
 
-  const id = Date.now().toString();
-  await setDoc(doc(db, "reunioes", id), {
-    titulo,
-    data,
-    inicio,
-    fim,
-    organizador: user.usuario
-  });
+        // Salvar dados no localStorage (pra exibir no home)
+        localStorage.setItem("userData", JSON.stringify(userData));
 
-  await carregarReunioes();
-}
+        // Redirecionar para home
+        window.location.href = "home.html";
 
-async function carregarReunioes() {
-  const lista = document.getElementById("listaReunioes");
-  if (!lista) return;
-  lista.innerHTML = "";
-
-  const snap = await getDocs(collection(db, "reunioes"));
-  const user = JSON.parse(sessionStorage.getItem("usuario"));
-
-  snap.forEach((docSnap) => {
-    const r = docSnap.data();
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${r.titulo}</td>
-      <td>${r.organizador}</td>
-      <td>${r.data}</td>
-      <td>${r.inicio}</td>
-      <td>${r.fim}</td>
-      <td>
-        <button class="admin-only btn-edit" data-id="${docSnap.id}">Editar</button>
-        <button class="admin-only btn-delete" data-id="${docSnap.id}">Excluir</button>
-      </td>
-    `;
-
-    lista.appendChild(tr);
-  });
-
-  // Botões só aparecem se ADM
-  if (user.tipo !== "ADM") {
-    document.querySelectorAll(".admin-only").forEach(btn => btn.style.display = "none");
-  }
-
-  // Eventos dos botões
-  document.querySelectorAll(".btn-delete").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      await deleteDoc(doc(db, "reunioes", btn.dataset.id));
-      await carregarReunioes();
-    });
-  });
-}
-
-document.getElementById("reuniaoForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const titulo = document.getElementById("tituloReuniao").value;
-  const data = document.getElementById("dataReuniao").value;
-  const inicio = document.getElementById("horaInicio").value;
-  const fim = document.getElementById("horaFim").value;
-
-  await agendarReuniao(titulo, data, inicio, fim);
-});
-
-// ===============================
-// Usuários (somente ADM)
-// ===============================
-async function carregarUsuarios() {
-  const lista = document.getElementById("listaUsuarios");
-  if (!lista) return;
-  lista.innerHTML = "";
-
-  const snap = await getDocs(collection(db, "usuarios"));
-
-  snap.forEach((docSnap) => {
-    const u = docSnap.data();
-    const tr = document.createElement("tr");
-
-    let botoes = "";
-    if (u.tipo === "ADM") {
-      botoes = "<td>Protegido</td>";
-    } else {
-      botoes = `
-        <td>
-          <button class="btn-delete-user" data-id="${docSnap.id}">Excluir</button>
-          <button class="btn-reset-pass" data-id="${docSnap.id}">Redefinir Senha</button>
-          <button class="btn-promote" data-id="${docSnap.id}">Promover ADM</button>
-        </td>
-      `;
+    } catch (error) {
+        console.error("Erro ao logar:", error);
+        alert("Erro ao fazer login: " + error.message);
     }
-
-    tr.innerHTML = `
-      <td>${u.usuario}</td>
-      <td>${u.tipo}</td>
-      ${botoes}
-    `;
-
-    lista.appendChild(tr);
-  });
-
-  // Eventos
-  document.querySelectorAll(".btn-delete-user").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      await deleteDoc(doc(db, "usuarios", btn.dataset.id));
-      await carregarUsuarios();
-    });
-  });
-
-  document.querySelectorAll(".btn-promote").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      await updateDoc(doc(db, "usuarios", btn.dataset.id), { tipo: "ADM" });
-      await carregarUsuarios();
-    });
-  });
-}
-
-// ===============================
-// Executar carregamento do Home
-// ===============================
-if (window.location.pathname.includes("home.html")) {
-  carregarHome();
-}
+});
