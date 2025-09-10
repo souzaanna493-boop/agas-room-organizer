@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>AGAS Room Organizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AGAS</h1>
+      <h2>ROOM ORGANIZER</h2>
+      <div class="user-info">
+        <span id="welcomeUser">🎉 Bem-vindo</span>
+        <button id="logoutBtn" class="logout">Logoff</button>
+      </div>
+    </header>
+
+    <!-- Abas -->
+    <div class="tabs">
+      <button id="tabHorarios" class="tab active">Horários</button>
+      <button id="tabUsuarios" class="tab">Usuários</button>
+    </div>
+
+    <!-- Seção Horários -->
+    <section id="sectionHorarios">
+      <h3>Reservar</h3>
+      <form id="formReserva">
+        <input type="text" id="titulo" placeholder="Título da reunião" required>
+        <input type="date" id="data" required>
+        <select id="horaInicio">
+          <option>07:00</option>
+          <option>07:30</option>
+          <option>08:00</option>
+          <option>08:30</option>
+        </select>
+        <select id="horaFim">
+          <option>07:30</option>
+          <option>08:00</option>
+          <option>08:30</option>
+          <option>09:00</option>
+        </select>
+        <button type="submit" class="btn-primary">Agendar Reunião</button>
+      </form>
+
+      <h3>Reuniões Agendadas</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Organizador</th>
+            <th>Data</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaReunioes"></tbody>
+      </table>
+    </section>
+
+    <!-- Seção Usuários -->
+    <section id="sectionUsuarios" style="display:none;">
+      <h3>Gerenciar Usuários</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Email</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaUsuarios"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
