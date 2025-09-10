@@ -1,68 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AGAS Room Organizer - Home</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGAS - Reuniões</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>AGAS Room Organizer</h1>
-    <button onclick="logoff()">Sair</button>
-  </header>
+  <div class="container">
+    <h2>Reuniões</h2>
+    <form id="reuniaoForm">
+      <input type="text" id="titulo" placeholder="Título da reunião" required>
+      <input type="date" id="data" required>
+      <input type="time" id="horaInicio" required>
+      <input type="time" id="horaFim" required>
+      <input type="text" id="organizador" placeholder="Organizador" required>
+      <button type="submit">Agendar</button>
+    </form>
 
-  <main>
-    <!-- Formulário para agendar reunião -->
-    <section>
-      <h2>Agendar Reunião</h2>
-      <form onsubmit="event.preventDefault(); 
-                      criarReuniao(
-                        document.getElementById('titulo').value,
-                        document.getElementById('data').value,
-                        document.getElementById('horaInicio').value,
-                        document.getElementById('horaFim').value,
-                        JSON.parse(localStorage.getItem('usuarioLogado')).usuario
-                      ); 
-                      this.reset();">
-        <label for="titulo">Título</label>
-        <input type="text" id="titulo" required />
+    <h3>Lista de Reuniões</h3>
+    <ul id="listaReunioes"></ul>
 
-        <label for="data">Data</label>
-        <input type="date" id="data" required />
+    <button onclick="logout()">Sair</button>
+  </div>
 
-        <label for="horaInicio">Hora início</label>
-        <input type="time" id="horaInicio" required />
+  <!-- Script principal -->
+  <script src="script.js"></script>
 
-        <label for="horaFim">Hora fim</label>
-        <input type="time" id="horaFim" required />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
-        <button type="submit">Agendar</button>
-      </form>
-    </section>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
+      authDomain: "agas-rooms-organizer.firebaseapp.com",
+      projectId: "agas-rooms-organizer",
+      storageBucket: "agas-rooms-organizer.appspot.com",
+      messagingSenderId: "101093561086",
+      appId: "1:101093561086:web:967b2829508ab589fecbaf",
+      measurementId: "G-JC4Y4PD3YV"
+    };
 
-    <!-- Lista de reuniões -->
-    <section>
-      <h2>Reuniões Agendadas</h2>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Organizador</th>
-            <th>Data</th>
-            <th>Início</th>
-            <th>Fim</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-reunioes">
-          <!-- preenchido dinamicamente -->
-        </tbody>
-      </table>
-    </section>
-  </main>
-
-  <!-- Script -->
-  <script type="module" src="script.js"></script>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 </body>
 </html>
