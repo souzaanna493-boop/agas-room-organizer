@@ -5,115 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AGAS Room Organizer</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Importando SDKs necessários
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Configuração do Firebase (a que você pegou no console)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtv32iTrRH80HdrqqQ6OHWD7BEJ2-eU",
+      authDomain: "agas-rooms-organizer.firebaseapp.com",
+      projectId: "agas-rooms-organizer",
+      storageBucket: "agas-rooms-organizer.appspot.com",
+      messagingSenderId: "101093561086",
+      appId: "1:101093561086:web:967b2b2958ab589fecbaf",
+      measurementId: "G-JC4YDP43YV"
+    };
+
+    // Inicializando Firebase
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app); // deixar db global
+  </script>
 </head>
 <body>
+  <div class="container">
+    <h1 class="logo">AGAS<br><span>ROOM ORGANIZER</span></h1>
 
-  <!-- LOGIN -->
-  <div id="login" class="page">
-    <div class="container">
-      <h1 class="title">AGAS</h1>
-      <p class="subtitle">ROOM ORGANIZER</p>
-      <form onsubmit="login(event)">
-        <input type="text" id="loginUser" placeholder="Usuário" required>
-        <input type="password" id="loginPass" placeholder="Senha" required>
-        <button type="submit" class="btn-primary">Entrar</button>
-      </form>
-      <p><a href="#" onclick="mostrarPagina('cadastro')">Criar Conta</a></p>
-      <p><a href="#" onclick="mostrarPagina('recuperar')">Recuperar Senha</a></p>
+    <div id="login-container" class="card">
+      <h2>Login</h2>
+      <input type="text" id="usuario" placeholder="Usuário">
+      <input type="password" id="senha" placeholder="Senha">
+      <button id="btnLogin">Entrar</button>
+      <p id="msgErro" style="color:red; display:none;"></p>
+    </div>
+
+    <div id="app-container" class="card" style="display:none;">
+      <p id="bemvindo"></p>
+      <button id="btnLogout">Sair</button>
+      <!-- aqui depois você coloca os módulos de horários e usuários -->
     </div>
   </div>
 
-  <!-- CADASTRO -->
-  <div id="cadastro" class="page" style="display:none;">
-    <div class="container">
-      <h1 class="title">AGAS</h1>
-      <p class="subtitle">ROOM ORGANIZER</p>
-      <form onsubmit="cadastrar(event)">
-        <input type="text" id="cadUser" placeholder="Usuário" required>
-        <input type="password" id="cadPass" placeholder="Senha" required>
-        <button type="submit" class="btn-primary">Registrar</button>
-      </form>
-      <button class="btn-secondary" onclick="mostrarPagina('login')">Voltar</button>
-    </div>
-  </div>
-
-  <!-- RECUPERAR SENHA -->
-  <div id="recuperar" class="page" style="display:none;">
-    <div class="container">
-      <h1 class="title">AGAS</h1>
-      <p class="subtitle">ROOM ORGANIZER</p>
-      <form>
-        <input type="text" placeholder="Usuário" required>
-        <button type="submit" class="btn-primary">Próximo</button>
-      </form>
-      <button class="btn-secondary" onclick="mostrarPagina('login')">Voltar</button>
-    </div>
-  </div>
-
-  <!-- HOME -->
-  <div id="home" class="page" style="display:none;">
-    <div class="container">
-      <div class="header">
-        <span id="usuarioLogado"></span>
-        <button class="btn-danger" onclick="logout()">Logoff</button>
-      </div>
-      <h1 class="title">AGAS</h1>
-      <p class="subtitle">ROOM ORGANIZER</p>
-
-      <!-- TABS -->
-      <div class="tabs">
-        <button id="tabHorarios" class="btn-primary" onclick="mostrarPagina('horarios')">Horários</button>
-        <button id="tabUsuarios" class="btn-secondary" onclick="mostrarPagina('usuarios')">Usuários</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- HORÁRIOS -->
-  <div id="horarios" class="page" style="display:none;">
-    <div class="container">
-      <h2>Reservar</h2>
-      <form id="formReuniao" onsubmit="agendarReuniao(event)">
-        <input type="text" id="tituloReuniao" placeholder="Título da reunião" required>
-        <input type="date" id="dataReuniao" required>
-        <input type="time" id="horaInicio" required>
-        <input type="time" id="horaFim" required>
-        <button type="submit" class="btn-primary">Agendar Reunião</button>
-      </form>
-
-      <h2>Reuniões Agendadas</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Organizador</th>
-            <th>Data</th>
-            <th>Início</th>
-            <th>Fim</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="listaReunioes"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- USUÁRIOS -->
-  <div id="usuarios" class="page" style="display:none;">
-    <div class="container">
-      <h2>Gerenciar Usuários</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Usuário</th>
-            <th>Tipo</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="listaUsuarios"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
+
+
