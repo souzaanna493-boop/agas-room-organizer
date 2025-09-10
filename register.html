@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criar Conta - AGAS</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro - AGAS Room Organizer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>AGAS - Criar Conta</h1>
+  <main>
+    <h1>Cadastro</h1>
+    <form onsubmit="event.preventDefault();
+                    registerUser(
+                      document.getElementById('email').value,
+                      document.getElementById('senha').value,
+                      document.getElementById('usuario').value
+                    );">
+      <label for="usuario">Nome de Usuário</label>
+      <input type="text" id="usuario" required />
 
-    <form id="registerForm">
-      <label for="registerUser">Usuário</label>
-      <input type="text" id="registerUser" placeholder="Digite seu usuário" required>
+      <label for="email">E-mail</label>
+      <input type="email" id="email" required />
 
-      <label for="registerEmail">E-mail</label>
-      <input type="email" id="registerEmail" placeholder="Digite seu e-mail" required>
-
-      <label for="registerPassword">Senha</label>
-      <input type="password" id="registerPassword" placeholder="Digite sua senha" required>
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" required />
 
       <button type="submit">Cadastrar</button>
     </form>
-
-    <div class="links">
-      <a href="index.html">Já tenho conta</a>
-    </div>
-  </div>
+    <p>Já tem conta? <a href="index.html">Entrar</a></p>
+  </main>
 
   <script type="module" src="script.js"></script>
 </body>
