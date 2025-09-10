@@ -2,20 +2,32 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>AGAS - Registro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta - AGAS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Criar Conta</h1>
+    <h1>AGAS - Criar Conta</h1>
+
     <form id="registerForm">
-      <input type="text" id="regUser" placeholder="Usuário" required>
-      <input type="email" id="regEmail" placeholder="E-mail" required>
-      <input type="password" id="regPass" placeholder="Senha" required>
-      <button type="submit">Registrar</button>
+      <label for="registerUser">Usuário</label>
+      <input type="text" id="registerUser" placeholder="Digite seu usuário" required>
+
+      <label for="registerEmail">E-mail</label>
+      <input type="email" id="registerEmail" placeholder="Digite seu e-mail" required>
+
+      <label for="registerPassword">Senha</label>
+      <input type="password" id="registerPassword" placeholder="Digite sua senha" required>
+
+      <button type="submit">Cadastrar</button>
     </form>
-    <a href="index.html">Voltar</a>
+
+    <div class="links">
+      <a href="index.html">Já tenho conta</a>
+    </div>
   </div>
+
   <script type="module" src="script.js"></script>
 </body>
 </html>
