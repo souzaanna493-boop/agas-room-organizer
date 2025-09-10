@@ -3,49 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGAS - Reuniões</title>
+  <title>AGAS Rooms Organizer - Home</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h2>Reuniões</h2>
-    <form id="reuniaoForm">
-      <input type="text" id="titulo" placeholder="Título da reunião" required>
-      <input type="date" id="data" required>
-      <input type="time" id="horaInicio" required>
-      <input type="time" id="horaFim" required>
-      <input type="text" id="organizador" placeholder="Organizador" required>
-      <button type="submit">Agendar</button>
-    </form>
+    <h2 id="bemVindo"></h2>
+    <button id="btnLogout">Logoff</button>
 
-    <h3>Lista de Reuniões</h3>
-    <ul id="listaReunioes"></ul>
+    <h3>Reservar Reunião</h3>
+    <input type="text" id="titulo" placeholder="Título da reunião">
+    <input type="date" id="data">
+    <input type="time" id="horaInicio">
+    <input type="time" id="horaFim">
+    <button id="btnAgendar">Agendar Reunião</button>
 
-    <button onclick="logout()">Sair</button>
+    <h3>Reuniões Agendadas</h3>
+    <ul id="lista-reunioes"></ul>
   </div>
 
-  <!-- Script principal -->
-  <script src="script.js"></script>
+  <!-- Importar Firebase e Script -->
+  <script type="module">
+    import { logoutUser, agendarReuniao, carregarReunioes } from "./script.js";
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
-      authDomain: "agas-rooms-organizer.firebaseapp.com",
-      projectId: "agas-rooms-organizer",
-      storageBucket: "agas-rooms-organizer.appspot.com",
-      messagingSenderId: "101093561086",
-      appId: "1:101093561086:web:967b2829508ab589fecbaf",
-      measurementId: "G-JC4Y4PD3YV"
+    // Mostra mensagem de boas-vindas
+    if (usuarioLogado) {
+      document.getElementById("bemVindo").innerText =
+        `🎉 Bem-vindo ${usuarioLogado.usuario} (${usuarioLogado.tipo})`;
+    }
+
+    // Botão de Logout
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      logoutUser();
+    });
+
+    // Botão de Agendar Reunião
+    document.getElementById("btnAgendar").addEventListener("click", () => {
+      const titulo = document.getElementById("titulo").value;
+      const data = document.getElementById("data").value;
+      const horaInicio = document.getElementById("horaInicio").value;
+      const horaFim = document.getElementById("horaFim").value;
+
+      if (!usuarioLogado) {
+        alert("Você precisa estar logado para agendar uma reunião.");
+        return;
+      }
+
+      agendarReuniao(titulo, data, horaInicio, horaFim, usuarioLogado.usuario);
+    });
+
+    // Carregar reuniões ao abrir a página
+    window.onload = () => {
+      carregarReunioes(usuarioLogado?.tipo === "ADM"); // só ADM pode editar/excluir
     };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
   </script>
 </body>
 </html>
