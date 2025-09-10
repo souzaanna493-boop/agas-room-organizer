@@ -5,50 +5,227 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AGAS Room Organizer</title>
   <link rel="stylesheet" href="style.css">
-
   <!-- Firebase SDK -->
-  <script type="module">
-    // Importando SDKs necessários
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // Configuração do Firebase (a que você pegou no console)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDtv32iTrRH80HdrqqQ6OHWD7BEJ2-eU",
-      authDomain: "agas-rooms-organizer.firebaseapp.com",
-      projectId: "agas-rooms-organizer",
-      storageBucket: "agas-rooms-organizer.appspot.com",
-      messagingSenderId: "101093561086",
-      appId: "1:101093561086:web:967b2b2958ab589fecbaf",
-      measurementId: "G-JC4YDP43YV"
-    };
-
-    // Inicializando Firebase
-    const app = initializeApp(firebaseConfig);
-    window.db = getFirestore(app); // deixar db global
-  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1 class="logo">AGAS<br><span>ROOM ORGANIZER</span></h1>
+  <!-- LOGIN -->
+  <div id="loginContainer">
+    <h1>AGAS</h1>
+    <h2>ROOM ORGANIZER</h2>
+    <input type="text" id="usuarioLogin" placeholder="Usuário">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button id="btnLogin">Entrar</button>
+    <p><a href="#" id="linkCadastro">Criar Conta</a> | <a href="#" id="linkRecuperar">Recuperar Senha</a></p>
+    <p id="msgErro" style="color:red; display:none;">Usuário ou senha incorretos</p>
+  </div>
 
-    <div id="login-container" class="card">
-      <h2>Login</h2>
-      <input type="text" id="usuario" placeholder="Usuário">
-      <input type="password" id="senha" placeholder="Senha">
-      <button id="btnLogin">Entrar</button>
-      <p id="msgErro" style="color:red; display:none;"></p>
+  <!-- CADASTRO -->
+  <div id="cadastroContainer" style="display:none;">
+    <h1>AGAS</h1>
+    <h2>ROOM ORGANIZER</h2>
+    <input type="text" id="usuarioCadastro" placeholder="Usuário">
+    <input type="password" id="senhaCadastro" placeholder="Senha">
+    <input type="email" id="emailCadastro" placeholder="Email">
+    <button id="btnCadastrar">Registrar</button>
+    <button id="btnVoltarLogin1">Voltar</button>
+    <p id="msgCadastro" style="color:green; display:none;">Usuário cadastrado com sucesso!</p>
+  </div>
+
+  <!-- RECUPERAR SENHA -->
+  <div id="recuperarContainer" style="display:none;">
+    <h1>AGAS</h1>
+    <h2>ROOM ORGANIZER</h2>
+    <input type="email" id="emailRecuperar" placeholder="Digite seu email">
+    <input type="password" id="novaSenha" placeholder="Nova Senha">
+    <button id="btnRecuperar">Redefinir Senha</button>
+    <button id="btnVoltarLogin2">Voltar</button>
+    <p id="msgRecuperar" style="color:green; display:none;">Senha atualizada com sucesso!</p>
+  </div>
+
+  <!-- APP -->
+  <div id="appContainer" style="display:none;">
+    <p id="bemvindo"></p>
+    <button id="btnLogout">Logoff</button>
+
+    <div>
+      <button id="abaHorarios">Horários</button>
+      <button id="abaUsuarios">Usuários</button>
     </div>
 
-    <div id="app-container" class="card" style="display:none;">
-      <p id="bemvindo"></p>
-      <button id="btnLogout">Sair</button>
-      <!-- aqui depois você coloca os módulos de horários e usuários -->
+    <!-- Aba Horários -->
+    <div id="abaHorariosConteudo" class="aba">
+      <h3>Reservar</h3>
+      <input type="text" placeholder="Título da reunião">
+      <input type="date">
+      <select><option>07:00</option><option>08:00</option></select>
+      <select><option>07:30</option><option>08:30</option></select>
+      <button class="btn-editar">Agendar Reunião</button>
+
+      <h3>Reuniões Agendadas</h3>
+      <table border="1">
+        <thead><tr><th>Título</th><th>Organizador</th><th>Data</th><th>Início</th><th>Fim</th><th>Ações</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Reunião</td><td>adm</td><td>2025-09-10</td><td>07:00</td><td>08:30</td>
+            <td>
+              <button class="btn-editar">Editar</button>
+              <button class="btn-excluir">Excluir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Aba Usuários -->
+    <div id="abaUsuariosConteudo" class="aba" style="display:none;">
+      <h3>Gerenciar Usuários</h3>
+      <table border="1">
+        <thead><tr><th>Usuário</th><th>Tipo</th><th>Ações</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Thay</td><td>Usuário</td>
+            <td>
+              <button class="btn-excluir">Excluir</button>
+              <button class="btn-resetar">Redefinir Senha</button>
+              <button class="btn-promover">Promover ADM</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // ⚡ Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtv32iTRhR08Hdrqq6OHWD7BEJ2-eU",
+      authDomain: "agas-rooms-organizer.firebaseapp.com",
+      projectId: "agas-rooms-organizer",
+      storageBucket: "agas-rooms-organizer.appspot.com",
+      messagingSenderId: "101893561086",
+      appId: "1:101893561086:web:967b2b2958ab589fecbaf",
+      measurementId: "G-JC4Y4PD3YV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Containers
+    const loginContainer = document.getElementById("loginContainer");
+    const cadastroContainer = document.getElementById("cadastroContainer");
+    const recuperarContainer = document.getElementById("recuperarContainer");
+    const appContainer = document.getElementById("appContainer");
+
+    const msgErro = document.getElementById("msgErro");
+    const msgCadastro = document.getElementById("msgCadastro");
+    const msgRecuperar = document.getElementById("msgRecuperar");
+    const bemvindo = document.getElementById("bemvindo");
+
+    // ---------------- LOGIN ----------------
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      const usuario = document.getElementById("usuarioLogin").value;
+      const senha = document.getElementById("senhaLogin").value;
+
+      const ref = doc(db, "usuarios", usuario);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        const dados = snap.data();
+        if (dados.senha === senha) {
+          loginContainer.style.display = "none";
+          appContainer.style.display = "block";
+          msgErro.style.display = "none";
+          bemvindo.textContent = `🎉 Bem-vindo ${dados.usuario} (${dados.tipo})`;
+
+          window.userTipo = dados.tipo;
+
+          // Se não for ADM → desabilita botões
+          if (window.userTipo !== "ADM") {
+            document.querySelectorAll(".btn-editar, .btn-excluir, .btn-promover, .btn-resetar").forEach(btn => {
+              btn.disabled = true;
+              btn.style.opacity = "0.5";
+            });
+          }
+        } else {
+          msgErro.style.display = "block";
+        }
+      } else {
+        msgErro.style.display = "block";
+      }
+    });
+
+    // ---------------- CADASTRO ----------------
+    document.getElementById("linkCadastro").addEventListener("click", () => {
+      loginContainer.style.display = "none";
+      cadastroContainer.style.display = "block";
+    });
+
+    document.getElementById("btnVoltarLogin1").addEventListener("click", () => {
+      cadastroContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    });
+
+    document.getElementById("btnCadastrar").addEventListener("click", async () => {
+      const usuario = document.getElementById("usuarioCadastro").value;
+      const senha = document.getElementById("senhaCadastro").value;
+      const email = document.getElementById("emailCadastro").value;
+
+      await setDoc(doc(db, "usuarios", usuario), {
+        usuario,
+        senha,
+        email,
+        tipo: "Usuário"
+      });
+
+      msgCadastro.style.display = "block";
+    });
+
+    // ---------------- RECUPERAR SENHA ----------------
+    document.getElementById("linkRecuperar").addEventListener("click", () => {
+      loginContainer.style.display = "none";
+      recuperarContainer.style.display = "block";
+    });
+
+    document.getElementById("btnVoltarLogin2").addEventListener("click", () => {
+      recuperarContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    });
+
+    document.getElementById("btnRecuperar").addEventListener("click", async () => {
+      const email = document.getElementById("emailRecuperar").value;
+      const novaSenha = document.getElementById("novaSenha").value;
+
+      // Procurar por email
+      const ref = doc(db, "usuarios", email.split("@")[0]); // simplificação
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        await updateDoc(ref, { senha: novaSenha });
+        msgRecuperar.style.display = "block";
+      }
+    });
+
+    // ---------------- LOGOUT ----------------
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      appContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    });
+
+    // ---------------- ABAS ----------------
+    document.getElementById("abaHorarios").addEventListener("click", () => {
+      document.getElementById("abaHorariosConteudo").style.display = "block";
+      document.getElementById("abaUsuariosConteudo").style.display = "none";
+    });
+
+    document.getElementById("abaUsuarios").addEventListener("click", () => {
+      document.getElementById("abaHorariosConteudo").style.display = "none";
+      document.getElementById("abaUsuariosConteudo").style.display = "block";
+    });
+  </script>
 </body>
 </html>
-
-
