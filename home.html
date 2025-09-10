@@ -2,37 +2,36 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>AGAS Room Organizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGAS - Home</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>AGAS</h1>
-      <h2>ROOM ORGANIZER</h2>
-      <div class="user-info">
-        <span id="welcomeUser">🎉 Bem-vindo</span>
-        <button id="logoutBtn" class="logout">Logoff</button>
-      </div>
-    </header>
+    <h1 class="logo">AGAS</h1>
+    <p class="subtitle">ROOM ORGANIZER</p>
+
+    <p id="welcomeUser">🎉 Bem-vindo!</p>
+    <button id="logoffBtn" class="btn-logout">Logoff</button>
 
     <!-- Abas -->
     <div class="tabs">
-      <button id="tabHorarios" class="tab active">Horários</button>
-      <button id="tabUsuarios" class="tab">Usuários</button>
+      <button class="tab active" id="horariosTabBtn">Horários</button>
+      <button class="tab" id="usuariosTab">Usuários</button>
     </div>
 
-    <!-- Seção Horários -->
-    <section id="sectionHorarios">
-      <h3>Reservar</h3>
-      <form id="formReserva">
-        <input type="text" id="titulo" placeholder="Título da reunião" required>
-        <input type="date" id="data" required>
+    <!-- Aba Horários -->
+    <div id="horariosSection" class="tab-content active">
+      <h2>Reservar</h2>
+      <form id="reuniaoForm">
+        <input type="text" id="tituloReuniao" placeholder="Título da reunião" required>
+        <input type="date" id="dataReuniao" required>
         <select id="horaInicio">
           <option>07:00</option>
           <option>07:30</option>
           <option>08:00</option>
           <option>08:30</option>
+          <option>09:00</option>
         </select>
         <select id="horaFim">
           <option>07:30</option>
@@ -43,7 +42,7 @@
         <button type="submit" class="btn-primary">Agendar Reunião</button>
       </form>
 
-      <h3>Reuniões Agendadas</h3>
+      <h2>Reuniões Agendadas</h2>
       <table>
         <thead>
           <tr>
@@ -57,28 +56,40 @@
         </thead>
         <tbody id="listaReunioes"></tbody>
       </table>
-    </section>
+    </div>
 
-    <!-- Seção Usuários -->
-    <section id="sectionUsuarios" style="display:none;">
-      <h3>Gerenciar Usuários</h3>
+    <!-- Aba Usuários -->
+    <div id="usuariosSection" class="tab-content">
+      <h2>Gerenciar Usuários</h2>
       <table>
         <thead>
           <tr>
             <th>Usuário</th>
-            <th>Email</th>
             <th>Tipo</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody id="listaUsuarios"></tbody>
       </table>
-    </section>
+    </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
+  <script>
+    // Controle das abas
+    document.getElementById("horariosTabBtn").addEventListener("click", () => {
+      document.getElementById("horariosSection").classList.add("active");
+      document.getElementById("usuariosSection").classList.remove("active");
+      document.getElementById("horariosTabBtn").classList.add("active");
+      document.getElementById("usuariosTab").classList.remove("active");
+    });
+
+    document.getElementById("usuariosTab").addEventListener("click", () => {
+      document.getElementById("usuariosSection").classList.add("active");
+      document.getElementById("horariosSection").classList.remove("active");
+      document.getElementById("usuariosTab").classList.add("active");
+      document.getElementById("horariosTabBtn").classList.remove("active");
+    });
+  </script>
 </body>
 </html>
