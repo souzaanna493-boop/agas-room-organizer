@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastro - AGAS Room Organizer</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro - AGAS</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <h1>Cadastro</h1>
-    <form onsubmit="event.preventDefault();
-                    registerUser(
-                      document.getElementById('email').value,
-                      document.getElementById('senha').value,
-                      document.getElementById('usuario').value
-                    );">
-      <label for="usuario">Nome de Usuário</label>
-      <input type="text" id="usuario" required />
-
-      <label for="email">E-mail</label>
-      <input type="email" id="email" required />
-
-      <label for="senha">Senha</label>
-      <input type="password" id="senha" required />
-
+  <div class="container">
+    <h2>Cadastro</h2>
+    <form id="registerForm">
+      <input type="email" id="regEmail" placeholder="E-mail" required>
+      <input type="password" id="regPassword" placeholder="Senha" required>
       <button type="submit">Cadastrar</button>
     </form>
-    <p>Já tem conta? <a href="index.html">Entrar</a></p>
-  </main>
+    <a href="index.html">Já tenho conta</a>
+  </div>
 
-  <script type="module" src="script.js"></script>
+  <!-- Script principal -->
+  <script src="script.js"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
+      authDomain: "agas-rooms-organizer.firebaseapp.com",
+      projectId: "agas-rooms-organizer",
+      storageBucket: "agas-rooms-organizer.appspot.com",
+      messagingSenderId: "101093561086",
+      appId: "1:101093561086:web:967b2829508ab589fecbaf",
+      measurementId: "G-JC4Y4PD3YV"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 </body>
 </html>
