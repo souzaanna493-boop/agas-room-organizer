@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - AGAS Room Organizer</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>AGAS Room Organizer</h1>
-
+  <main>
+    <h1>Login</h1>
     <form id="loginForm">
-      <label for="loginIdentifier">Usuário ou E-mail</label>
-      <input type="text" id="loginIdentifier" placeholder="Digite seu usuário ou e-mail" required>
+      <label for="email">E-mail</label>
+      <input type="email" id="email" required />
 
-      <label for="loginPassword">Senha</label>
-      <input type="password" id="loginPassword" placeholder="Digite sua senha" required>
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" required />
 
       <button type="submit">Entrar</button>
     </form>
 
-    <div class="links">
-      <a href="register.html">Criar conta</a> |
-      <a href="reset.html">Esqueceu a senha?</a>
-    </div>
-  </div>
+    <p><a href="register.html">Criar conta</a></p>
+    <p><a href="reset.html">Esqueci minha senha</a></p>
+  </main>
 
-  <!-- Firebase SDK -->
   <script type="module" src="script.js"></script>
+  <script>
+    // Permitir login com Enter
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+      loginUser(email, senha);
+    });
+  </script>
 </body>
 </html>
