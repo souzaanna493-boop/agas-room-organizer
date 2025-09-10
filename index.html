@@ -1,37 +1,45 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - AGAS Room Organizer</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGAS - Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <h1>Login</h1>
+  <div class="container">
+    <h2>Login</h2>
     <form id="loginForm">
-      <label for="email">E-mail</label>
-      <input type="email" id="email" required />
-
-      <label for="senha">Senha</label>
-      <input type="password" id="senha" required />
-
+      <input type="text" id="email" placeholder="E-mail" required>
+      <input type="password" id="password" placeholder="Senha" required>
       <button type="submit">Entrar</button>
     </form>
+    <a href="register.html">Criar conta</a> |
+    <a href="reset.html">Esqueci minha senha</a>
+  </div>
 
-    <p><a href="register.html">Criar conta</a></p>
-    <p><a href="reset.html">Esqueci minha senha</a></p>
-  </main>
+  <!-- Script principal -->
+  <script src="script.js"></script>
 
-  <script type="module" src="script.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
   <script>
-    // Permitir login com Enter
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const senha = document.getElementById("senha").value;
-      loginUser(email, senha);
-    });
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
+      authDomain: "agas-rooms-organizer.firebaseapp.com",
+      projectId: "agas-rooms-organizer",
+      storageBucket: "agas-rooms-organizer.appspot.com",
+      messagingSenderId: "101093561086",
+      appId: "1:101093561086:web:967b2829508ab589fecbaf",
+      measurementId: "G-JC4Y4PD3YV"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
   </script>
 </body>
 </html>
