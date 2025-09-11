@@ -1,150 +1,80 @@
-// Importa funções do Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGAS Room Organizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span id="user-info"></span>
+      <button id="logoutBtn" class="btn-logout">Logoff</button>
+    </div>
 
-// Configuração do Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
-  authDomain: "agas-rooms-organizer.firebaseapp.com",
-  projectId: "agas-rooms-organizer",
-  storageBucket: "agas-rooms-organizer.appspot.com",
-  messagingSenderId: "101093561086",
-  appId: "1:101093561086:web:967b2829508ab589fecbaf",
-  measurementId: "G-JC4Y4PD3YV"
-};
+    <h1><span class="logo">AGAS</span><br>ROOM ORGANIZER</h1>
 
-// Inicializa Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    <!-- Abas -->
+    <div class="tabs">
+      <button class="tab active" data-tab="horarios">Horários</button>
+      <button class="tab" data-tab="usuarios">Usuários</button>
+    </div>
 
-// Login
-document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const senha = document.getElementById("senha").value;
+    <!-- Conteúdo da aba Horários -->
+    <div class="tab-content active" id="horarios">
+      <h2>Reservar</h2>
+      <input type="text" id="titulo" placeholder="Título da reunião">
+      <input type="date" id="data">
+      <select id="horaInicio">
+        <option>07:00</option><option>08:00</option><option>09:00</option>
+        <option>10:00</option><option>11:00</option><option>12:00</option>
+        <option>13:00</option><option>14:00</option><option>15:00</option>
+        <option>16:00</option><option>17:00</option><option>18:00</option>
+      </select>
+      <select id="horaFim">
+        <option>07:30</option><option>08:30</option><option>09:30</option>
+        <option>10:30</option><option>11:30</option><option>12:30</option>
+        <option>13:30</option><option>14:30</option><option>15:30</option>
+        <option>16:30</option><option>17:30</option><option>18:30</option>
+      </select>
+      <button id="agendarBtn" class="btn-primary">Agendar Reunião</button>
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
+      <h2>Reuniões Agendadas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Organizador</th>
+            <th>Data</th>
+            <th>Início</th>
+            <th>Fim</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="lista-reunioes"></tbody>
+      </table>
+    </div>
 
-    // Buscar dados no Firestore
-    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
+    <!-- Conteúdo da aba Usuários -->
+    <div class="tab-content" id="usuarios">
+      <h2>Gerenciar Usuários</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Tipo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="lista-usuarios"></tbody>
+      </table>
+    </div>
+  </div>
 
-      // Normaliza o tipo (ADM / USUARIO)
-      const tipo = (userData.tipo || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-      localStorage.setItem("usuarioLogado", JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-        usuario: userData.usuario,
-        tipo: tipo
-      }));
-
-      window.location.href = "home.html";
-    } else {
-      alert("Usuário não encontrado no banco de dados.");
-    }
-  } catch (error) {
-    alert("Erro ao logar: " + error.message);
-  }
-});
-
-// Registro
-document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const senha = document.getElementById("senha").value;
-  const usuario = document.getElementById("usuario").value;
-
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-
-    await setDoc(doc(db, "usuarios", user.uid), {
-      email: email,
-      usuario: usuario,
-      tipo: "USUARIO" // sempre padrão
-    });
-
-    alert("Conta criada com sucesso!");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Erro ao criar conta: " + error.message);
-  }
-});
-
-// Recuperação de senha
-document.getElementById("resetForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-
-  try {
-    await sendPasswordResetEmail(auth, email);
-    alert("Link de recuperação enviado para o e-mail.");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Erro ao enviar link: " + error.message);
-  }
-});
-
-// Logout
-document.getElementById("btnLogoff")?.addEventListener("click", async () => {
-  await signOut(auth);
-  localStorage.removeItem("usuarioLogado");
-  window.location.href = "index.html";
-});
-
-// Carregar dados do usuário logado
-window.addEventListener("DOMContentLoaded", async () => {
-  if (window.location.pathname.includes("home.html")) {
-    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!usuarioLogado) {
-      window.location.href = "index.html";
-      return;
-    }
-
-    document.getElementById("welcomeUser").innerText = `🎉 Bem-vindo ${usuarioLogado.usuario} (${usuarioLogado.tipo})`;
-
-    if (usuarioLogado.tipo === "ADM") {
-      document.getElementById("btnHorarios").style.display = "block";
-      document.getElementById("btnUsuarios").style.display = "block";
-    } else {
-      document.getElementById("btnHorarios").style.display = "none";
-      document.getElementById("btnUsuarios").style.display = "none";
-    }
-
-    carregarReunioes(usuarioLogado.tipo);
-  }
-});
-
-// Função para carregar reuniões
-async function carregarReunioes(tipo) {
-  const tabela = document.getElementById("tabelaReunioes");
-  tabela.innerHTML = "";
-
-  const querySnapshot = await getDocs(collection(db, "reunioes"));
-  querySnapshot.forEach((docSnap) => {
-    const reuniao = docSnap.data();
-    const tr = document.createElement("tr");
-
-    tr.innerHTML = `
-      <td>${reuniao.titulo}</td>
-      <td>${reuniao.organizador}</td>
-      <td>${reuniao.data}</td>
-      <td>${reuniao.horaInicio}</td>
-      <td>${reuniao.horaFim}</td>
-      <td>
-        ${tipo === "ADM" ? `
-          <button class="btn-editar" data-id="${docSnap.id}">Editar</button>
-          <button class="btn-excluir" data-id="${docSnap.id}">Excluir</button>
-        ` : ""}
-      </td>
-    `;
-
-    tabela.appendChild(tr);
-  });
-}
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
