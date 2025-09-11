@@ -1,4 +1,4 @@
-/* Reset básico */
+/* ===== Reset básico ===== */
 * {
   margin: 0;
   padding: 0;
@@ -7,145 +7,169 @@
 }
 
 body {
-  background-color: #f4f6f9;
-  color: #333;
+  background: #fafafa;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;
-  padding: 40px 20px;
-}
-
-main {
-  background: #fff;
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
 }
 
-h1, h2 {
-  margin-bottom: 20px;
+/* ===== Container principal ===== */
+.container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 900px;
+}
+
+h1 {
   text-align: center;
-  color: #2c3e50;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-label {
+  font-size: 36px;
   font-weight: bold;
-  margin-bottom: 5px;
+  background: linear-gradient(90deg, #ff00ff, #8a2be2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
 }
 
-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border 0.3s;
-}
-
-input:focus {
-  border-color: #3498db;
-  outline: none;
-}
-
-button {
-  padding: 10px;
-  background: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
+h2 {
+  text-align: center;
+  color: #444;
   font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* ===== Info usuário + botão logout ===== */
+#user-info {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#logoutBtn {
+  float: right;
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: bold;
+}
+#logoutBtn:hover {
+  background: #e60000;
+}
+
+/* ===== Abas ===== */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  background: #ddd;
   transition: background 0.3s;
 }
 
-button:hover {
-  background: #2980b9;
+.tab.active {
+  background: linear-gradient(90deg, #ff00ff, #8a2be2);
 }
 
-/* Links */
-a {
-  color: #3498db;
-  text-decoration: none;
-  font-size: 14px;
+/* ===== Conteúdo das abas ===== */
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-p {
-  margin-top: 10px;
-  text-align: center;
-}
-
-/* Cabeçalho no painel */
-header {
+/* ===== Formulário de reunião ===== */
+form {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #3498db;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+form input, form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  flex: 1;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
   color: white;
-  padding: 15px 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  transition: background 0.3s;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 20px;
+#agendarBtn {
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(90deg, #ff00ff, #8a2be2);
+}
+#agendarBtn:hover {
+  opacity: 0.9;
 }
 
-header button {
-  background: #e74c3c;
-  font-size: 14px;
-  padding: 8px 12px;
-}
-
-header button:hover {
-  background: #c0392b;
-}
-
-/* Painel */
-section {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-bottom: 20px;
-}
-
+/* ===== Tabelas ===== */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
-table th, table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  color: #444;
   font-size: 14px;
 }
 
-table th {
-  background: #3498db;
-  color: white;
+/* ===== Botões de ação ===== */
+button.excluir {
+  background: #ff4d4d;
+}
+button.excluir:hover {
+  background: #e60000;
 }
 
-table tr:nth-child(even) {
-  background: #f9f9f9;
+button.editar {
+  background: #4da6ff;
+}
+button.editar:hover {
+  background: #0059b3;
 }
 
-table button {
-  margin: 0 3px;
-  padding: 6px 10px;
-  font-size: 12px;
+button.redefinir {
+  background: #ff9900;
+}
+button.redefinir:hover {
+  background: #cc7a00;
+}
+
+button.promover {
+  background: #8a2be2;
+}
+button.promover:hover {
+  background: #5a189a;
 }
