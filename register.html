@@ -3,42 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro - AGAS</title>
+  <title>AGAS - Cadastro</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Cadastro</h2>
-    <form id="registerForm">
-      <input type="email" id="regEmail" placeholder="E-mail" required>
-      <input type="password" id="regPassword" placeholder="Senha" required>
+  <div class="auth-container">
+    <h1>Cadastro</h1>
+    <p>Crie sua conta para acessar</p>
+
+    <form id="cadastroForm">
+      <input type="text" id="cadastroUsuario" placeholder="Nome de usuário" required>
+      <input type="email" id="cadastroEmail" placeholder="E-mail" required>
+      <input type="password" id="cadastroSenha" placeholder="Senha" required>
       <button type="submit">Cadastrar</button>
     </form>
-    <a href="index.html">Já tenho conta</a>
+
+    <div class="auth-links">
+      <a href="index.html">Já tenho conta</a>
+    </div>
   </div>
 
-  <!-- Script principal -->
-  <script src="script.js"></script>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
-      authDomain: "agas-rooms-organizer.firebaseapp.com",
-      projectId: "agas-rooms-organizer",
-      storageBucket: "agas-rooms-organizer.appspot.com",
-      messagingSenderId: "101093561086",
-      appId: "1:101093561086:web:967b2829508ab589fecbaf",
-      measurementId: "G-JC4Y4PD3YV"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
