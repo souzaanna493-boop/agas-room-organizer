@@ -8,22 +8,27 @@
 </head>
 <body>
   <div class="container">
-    <h2>AGAS Room Organizer</h2>
-    <h3>Login</h3>
+    <h1>AGAS Room Organizer</h1>
+    <h2>Login</h2>
 
     <form id="loginForm">
-      <input type="text" id="loginInput" placeholder="Usuário ou E-mail" required>
-      <input type="password" id="passwordInput" placeholder="Senha" required>
+      <input type="email" id="loginEmail" placeholder="E-mail" required>
+      <input type="password" id="loginPassword" placeholder="Senha" required>
       <button type="submit">Entrar</button>
     </form>
 
-    <p>
+    <div class="links">
       <a href="register.html">Criar nova conta</a> |
       <a href="recuperar.html">Esqueci minha senha</a>
-    </p>
+    </div>
   </div>
 
-  <!-- Firebase -->
-  <script type="module" src="script.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- Seu script principal -->
+  <script src="script.js"></script>
 </body>
 </html>
