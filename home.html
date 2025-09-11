@@ -3,70 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGAS - Home</title>
+  <title>Home - AGAS Room Organizer</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <!-- Cabeçalho -->
-    <div class="header">
-      <span id="user-info">Usuário: ...</span>
-      <button id="logoffBtn" class="btn-logout">Logoff</button>
-    </div>
+    <header>
+      <h2>AGAS Room Organizer <span id="userInfo"></span></h2>
+      <button id="logoutBtn">Sair</button>
+    </header>
 
-    <h1 class="logo">AGAS</h1>
-    <p class="subtitle">ROOM ORGANIZER</p>
+    <!-- Navegação por abas -->
+    <nav>
+      <button class="tabBtn active" data-tab="horarios">Horários</button>
+      <button class="tabBtn" data-tab="usuarios">Usuários</button>
+    </nav>
 
-    <!-- Abas -->
-    <div class="tabs">
-      <button id="tab-horarios" class="tab active">Horários</button>
-      <button id="tab-usuarios" class="tab">Usuários</button>
-    </div>
-
-    <!-- Seção Horários -->
-    <div id="horarios-section" class="section">
-      <h2>Reservar</h2>
-      <form id="form-reuniao" class="form">
-        <input type="text" id="titulo" placeholder="Título da reunião" required>
+    <!-- Aba de Horários -->
+    <section id="horarios" class="tabContent active">
+      <h3>Agendar Reunião</h3>
+      <form id="formReuniao">
+        <input type="text" id="titulo" placeholder="Título" required>
         <input type="date" id="data" required>
         <input type="time" id="horaInicio" required>
         <input type="time" id="horaFim" required>
-        <button type="submit" class="btn">Agendar Reunião</button>
+        <button type="submit">Agendar</button>
       </form>
 
-      <h2>Reuniões Agendadas</h2>
-      <table class="table">
+      <h3>Reuniões</h3>
+      <table>
         <thead>
           <tr>
             <th>Título</th>
-            <th>Organizador</th>
             <th>Data</th>
             <th>Início</th>
             <th>Fim</th>
+            <th>Organizador</th>
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="reunioes-lista"></tbody>
+        <tbody id="listaReunioes"></tbody>
       </table>
-    </div>
+    </section>
 
-    <!-- Seção Usuários -->
-    <div id="usuarios-section" class="section" style="display: none;">
-      <h2>Gerenciar Usuários</h2>
-      <table class="table">
+    <!-- Aba de Usuários -->
+    <section id="usuarios" class="tabContent">
+      <h3>Usuários</h3>
+      <table>
         <thead>
           <tr>
             <th>Usuário</th>
-            <th>Tipo</th>
+            <th>Email</th>
+            <th>Admin</th>
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="usuarios-lista"></tbody>
+        <tbody id="listaUsuarios"></tbody>
       </table>
-    </div>
+    </section>
   </div>
 
-  <!-- Script -->
+  <!-- Firebase -->
   <script type="module" src="home.js"></script>
 </body>
 </html>
