@@ -1,177 +1,170 @@
-// ===============================
-// Import Firebase SDK
-// ===============================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  sendPasswordResetEmail, 
-  signOut 
-} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  setDoc, 
-  deleteDoc, 
-  updateDoc, 
-  onSnapshot 
-} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-
-// ===============================
+// ==============================
 // Configuração Firebase
-// ===============================
+// ==============================
 const firebaseConfig = {
-  apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
+  apiKey: "AIzaSy8vemTT88BhR90q4QG6fHWD78EJ2-eU",
   authDomain: "agas-rooms-organizer.firebaseapp.com",
   projectId: "agas-rooms-organizer",
-  storageBucket: "agas-rooms-organizer.appspot.com", // corrigido
+  storageBucket: "agas-rooms-organizer.appspot.com",
   messagingSenderId: "101093561086",
-  appId: "1:101093561086:web:967b2829508ab589fecbaf",
+  appId: "1:101093561086:web:9e7c229d39ba859fcbaf",
   measurementId: "G-JC4Y4PD3YV"
 };
 
-// Inicialização
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// ===============================
-// Cadastro de Usuário
-// ===============================
-export async function registerUser(usuario, email, senha) {
+// ==============================
+// LOGIN
+// ==============================
+async function login(event) {
+  event.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const senha = document.getElementById("login-senha").value;
+
   try {
-    const cred = await createUserWithEmailAndPassword(auth, email, senha);
-    await setDoc(doc(db, "usuarios", cred.user.uid), {
+    await auth.signInWithEmailAndPassword(email, senha);
+    window.location.href = "home.html";
+  } catch (error) {
+    alert("Erro no login: " + error.message);
+  }
+}
+
+// ==============================
+// REGISTRO
+// ==============================
+async function register(event) {
+  event.preventDefault();
+  const usuario = document.getElementById("register-usuario").value;
+  const email = document.getElementById("register-email").value;
+  const senha = document.getElementById("register-senha").value;
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, senha);
+    await db.collection("usuarios").doc(cred.user.uid).set({
       usuario: usuario,
       email: email,
       tipo: "Usuário"
     });
     alert("Usuário cadastrado com sucesso!");
     window.location.href = "index.html";
-  } catch (e) {
-    alert("Erro no cadastro: " + e.message);
+  } catch (error) {
+    alert("Erro no cadastro: " + error.message);
   }
 }
 
-// ===============================
-// Login de Usuário
-// ===============================
-export async function loginUser(email, senha) {
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email, senha);
-    const q = await getDocs(collection(db, "usuarios"));
-    let userData = null;
-
-    q.forEach(docSnap => {
-      if (docSnap.data().email === email) {
-        userData = { id: docSnap.id, ...docSnap.data() };
-      }
-    });
-
-    if (!userData) {
-      alert("Usuário não encontrado no banco.");
-      return;
-    }
-
-    sessionStorage.setItem("usuario", JSON.stringify(userData));
-    window.location.href = "home.html";
-  } catch (e) {
-    alert("Erro no login: " + e.message);
-  }
-}
-
-// ===============================
-// Recuperar Senha
-// ===============================
-export async function resetPassword(email) {
-  try {
-    await sendPasswordResetEmail(auth, email);
-    alert("E-mail de recuperação enviado!");
-  } catch (e) {
-    alert("Erro ao recuperar senha: " + e.message);
-  }
-}
-
-// ===============================
-// Logout
-// ===============================
-export async function logoutUser() {
-  await signOut(auth);
-  sessionStorage.clear();
+// ==============================
+// LOGOUT
+// ==============================
+async function logout() {
+  await auth.signOut();
   window.location.href = "index.html";
 }
 
-// ===============================
-// Reuniões
-// ===============================
-export async function agendarReuniao(titulo, data, inicio, fim, organizador) {
+// ==============================
+// REDEFINIR SENHA
+// ==============================
+async function resetPassword(event) {
+  event.preventDefault();
+  const email = document.getElementById("reset-email").value;
   try {
-    await addDoc(collection(db, "reunioes"), {
-      titulo,
-      data,
-      inicio,
-      fim,
-      organizador
-    });
-    alert("Reunião agendada com sucesso!");
-  } catch (e) {
-    alert("Erro ao agendar reunião: " + e.message);
+    await auth.sendPasswordResetEmail(email);
+    alert("Email de redefinição enviado!");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert("Erro ao enviar redefinição: " + error.message);
   }
 }
 
-export function carregarReunioes(callback) {
-  onSnapshot(collection(db, "reunioes"), (snapshot) => {
-    const reunioes = [];
-    snapshot.forEach((doc) => {
-      reunioes.push({ id: doc.id, ...doc.data() });
-    });
-    callback(reunioes);
+// ==============================
+// CARREGAR REUNIÕES (home.html)
+// ==============================
+async function carregarReunioes() {
+  const lista = document.getElementById("lista-reunioes");
+  if (!lista) return;
+
+  const snap = await db.collection("reunioes").get();
+  lista.innerHTML = "";
+  snap.forEach(doc => {
+    const r = doc.data();
+    lista.innerHTML += `
+      <tr>
+        <td>${r.titulo}</td>
+        <td>${r.organizador}</td>
+        <td>${r.data}</td>
+        <td>${r.inicio}</td>
+        <td>${r.fim}</td>
+        <td>
+          <button onclick="editarReuniao('${doc.id}')">Editar</button>
+          <button onclick="excluirReuniao('${doc.id}')">Excluir</button>
+        </td>
+      </tr>
+    `;
   });
 }
 
-export async function editarReuniao(id, dados) {
-  try {
-    await updateDoc(doc(db, "reunioes", id), dados);
-    alert("Reunião atualizada!");
-  } catch (e) {
-    alert("Erro ao editar: " + e.message);
+// ==============================
+// AGENDAR REUNIÃO
+// ==============================
+async function agendarReuniao(event) {
+  event.preventDefault();
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Você precisa estar logado.");
+    return;
   }
+
+  const titulo = document.getElementById("titulo").value;
+  const data = document.getElementById("data").value;
+  const inicio = document.getElementById("inicio").value;
+  const fim = document.getElementById("fim").value;
+
+  await db.collection("reunioes").add({
+    titulo,
+    organizador: user.email,
+    data,
+    inicio,
+    fim
+  });
+
+  alert("Reunião agendada!");
+  carregarReunioes();
 }
 
-export async function excluirReuniao(id) {
-  try {
-    await deleteDoc(doc(db, "reunioes", id));
-    alert("Reunião excluída!");
-  } catch (e) {
-    alert("Erro ao excluir: " + e.message);
-  }
-}
+// ==============================
+// GERENCIAR USUÁRIOS (ADM)
+// ==============================
+async function carregarUsuarios() {
+  const lista = document.getElementById("lista-usuarios");
+  if (!lista) return;
 
-// ===============================
-// Usuários (somente ADM)
-// ===============================
-export async function carregarUsuarios(callback) {
-  onSnapshot(collection(db, "usuarios"), (snapshot) => {
-    const usuarios = [];
-    snapshot.forEach((doc) => {
-      usuarios.push({ id: doc.id, ...doc.data() });
-    });
-    callback(usuarios);
+  const snap = await db.collection("usuarios").get();
+  lista.innerHTML = "";
+  snap.forEach(doc => {
+    const u = doc.data();
+    lista.innerHTML += `
+      <tr>
+        <td>${u.usuario}</td>
+        <td>${u.tipo}</td>
+        <td>
+          <button onclick="excluirUsuario('${doc.id}')">Excluir</button>
+          <button onclick="promoverADM('${doc.id}')">Promover ADM</button>
+        </td>
+      </tr>
+    `;
   });
 }
 
-export async function promoverAdm(id) {
-  await updateDoc(doc(db, "usuarios", id), { tipo: "ADM" });
+async function excluirUsuario(id) {
+  await db.collection("usuarios").doc(id).delete();
+  carregarUsuarios();
 }
 
-export async function redefinirSenhaUsuario(email) {
-  await sendPasswordResetEmail(auth, email);
-}
-
-export async function excluirUsuario(id) {
-  await deleteDoc(doc(db, "usuarios", id));
+async function promoverADM(id) {
+  await db.collection("usuarios").doc(id).update({
+    tipo: "ADM"
+  });
+  carregarUsuarios();
 }
