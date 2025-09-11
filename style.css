@@ -3,246 +3,186 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: #f5f5f5;
+  background: #f7f7f7;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
-  padding: 20px;
 }
 
+/* Container principal */
 .container {
   background: #fff;
-  padding: 20px 30px;
+  padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 90%;
   max-width: 900px;
-  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* Cabeçalho */
-.header {
+/* Header */
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-}
-
-#user-info {
-  font-weight: bold;
-}
-
-.btn-logout {
-  background: #d9534f;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-logout:hover {
-  background: #c9302c;
-}
-
-/* Logo */
-.logo {
-  text-align: center;
-  font-size: 32px;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.subtitle {
-  text-align: center;
-  font-size: 16px;
   margin-bottom: 20px;
-  color: #666;
+}
+
+header h2 {
+  font-size: 28px;
+  color: #d633ff;
+}
+
+header h2 span {
+  font-size: 16px;
+  color: #555;
+  display: block;
+}
+
+#logoutBtn {
+  background: #ff4d4d;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#logoutBtn:hover {
+  background: #e60000;
 }
 
 /* Abas */
-.tabs {
+nav {
   display: flex;
-  justify-content: center;
   margin-bottom: 20px;
 }
 
-.tab {
-  background: #e0e0e0;
+nav button {
+  flex: 1;
+  padding: 12px;
   border: none;
-  padding: 10px 20px;
-  margin: 0 5px;
-  border-radius: 8px 8px 0 0;
   cursor: pointer;
+  font-size: 16px;
   font-weight: bold;
+  border-radius: 8px 8px 0 0;
+  background: #e0e0e0;
+  transition: 0.3s;
 }
 
-.tab.active {
-  background: #007bff;
-  color: #fff;
-}
-
-.tab:hover {
-  background: #0056b3;
-  color: #fff;
+nav button.active {
+  background: linear-gradient(90deg, #ff33cc, #9933ff);
+  color: white;
 }
 
 /* Seções */
-.section {
+section {
   background: #fafafa;
   padding: 20px;
-  border-radius: 0 0 8px 8px;
-  border: 1px solid #ddd;
-  margin-bottom: 20px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
 }
 
-/* Formulários */
-.form {
+/* Formulário de agendamento */
+form {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.form input, .form button {
+form input, form select {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 14px;
-}
-
-.form input {
   flex: 1;
+  min-width: 150px;
 }
 
-.btn {
-  background: #007bff;
-  color: #fff;
+form button {
+  background: linear-gradient(90deg, #ff33cc, #9933ff);
   border: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 6px;
   cursor: pointer;
-  flex: none;
+  transition: 0.3s;
 }
 
-.btn:hover {
-  background: #0056b3;
+form button:hover {
+  opacity: 0.9;
 }
 
 /* Tabelas */
-.table {
+table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
-.table th, .table td {
+table th, table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 10px;
   text-align: center;
-  font-size: 14px;
 }
 
-.table th {
-  background: #007bff;
-  color: #fff;
+table th {
+  background: #f0f0f0;
 }
 
-.table tr:nth-child(even) {
+table tr:nth-child(even) {
   background: #f9f9f9;
 }
 
-.table tr:hover {
-  background: #f1f1f1;
-}
-
-/* Botões de ações */
-.table button {
-  margin: 0 3px;
-  padding: 4px 8px;
+/* Botões de ação */
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
   cursor: pointer;
+  font-weight: bold;
+  margin: 2px;
 }
 
-.table button:hover {
-  opacity: 0.9;
+.btn-excluir {
+  background: #ff4d4d;
+  color: white;
 }
 
-.table button:nth-child(1) {
-  background: #ffc107;
-  color: #fff;
+.btn-excluir:hover {
+  background: #cc0000;
 }
 
-.table button:nth-child(2) {
-  background: #d9534f;
-  color: #fff;
+.btn-editar {
+  background: #33aaff;
+  color: white;
 }
 
-/* === Telas de Login, Cadastro e Recuperar senha === */
-.auth-container {
-  background: #fff;
-  padding: 30px 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
+.btn-editar:hover {
+  background: #0077cc;
 }
 
-.auth-container h1 {
-  margin-bottom: 10px;
-  font-size: 28px;
-  color: #333;
+.btn-promover {
+  background: #9933ff;
+  color: white;
 }
 
-.auth-container p {
-  margin-bottom: 20px;
-  color: #666;
-  font-size: 14px;
+.btn-promover:hover {
+  background: #6611cc;
 }
 
-.auth-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.btn-senha {
+  background: #ffa500;
+  color: white;
 }
 
-.auth-container input {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.auth-container button {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.auth-container button:hover {
-  background: #0056b3;
-}
-
-.auth-links {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.auth-links a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.auth-links a:hover {
-  text-decoration: underline;
+.btn-senha:hover {
+  background: #cc8400;
 }
