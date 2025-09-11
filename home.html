@@ -5,55 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AGAS - Home</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 </head>
 <body>
   <div class="container">
-    <div id="user-info">
-      Usuário: <span id="user-name"></span>
-      <button id="logoutBtn">Logoff</button>
+    <!-- Cabeçalho -->
+    <div class="header">
+      <span id="user-info">Usuário: ...</span>
+      <button id="logoffBtn" class="btn-logout">Logoff</button>
     </div>
 
-    <h1>AGAS</h1>
-    <h2>ROOM ORGANIZER</h2>
+    <h1 class="logo">AGAS</h1>
+    <p class="subtitle">ROOM ORGANIZER</p>
 
     <!-- Abas -->
     <div class="tabs">
-      <div class="tab active" data-tab="horarios">Horários</div>
-      <div class="tab" data-tab="usuarios">Usuários</div>
+      <button id="tab-horarios" class="tab active">Horários</button>
+      <button id="tab-usuarios" class="tab">Usuários</button>
     </div>
 
-    <!-- Conteúdo da aba Horários -->
-    <div id="horarios" class="tab-content active">
-      <h3>Reservar</h3>
-      <form id="reuniaoForm">
+    <!-- Seção Horários -->
+    <div id="horarios-section" class="section">
+      <h2>Reservar</h2>
+      <form id="form-reuniao" class="form">
         <input type="text" id="titulo" placeholder="Título da reunião" required>
         <input type="date" id="data" required>
-        <select id="horaInicio">
-          <option value="">Início</option>
-          <option value="07:00">07:00</option>
-          <option value="08:00">08:00</option>
-          <option value="09:00">09:00</option>
-          <option value="10:00">10:00</option>
-          <option value="11:00">11:00</option>
-          <option value="12:00">12:00</option>
-        </select>
-        <select id="horaFim">
-          <option value="">Fim</option>
-          <option value="07:30">07:30</option>
-          <option value="08:30">08:30</option>
-          <option value="09:30">09:30</option>
-          <option value="10:30">10:30</option>
-          <option value="11:30">11:30</option>
-          <option value="12:30">12:30</option>
-        </select>
-        <button type="submit" id="agendarBtn">Agendar Reunião</button>
+        <input type="time" id="horaInicio" required>
+        <input type="time" id="horaFim" required>
+        <button type="submit" class="btn">Agendar Reunião</button>
       </form>
 
-      <h3>Reuniões Agendadas</h3>
-      <table>
+      <h2>Reuniões Agendadas</h2>
+      <table class="table">
         <thead>
           <tr>
             <th>Título</th>
@@ -64,14 +46,14 @@
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="reunioes-list"></tbody>
+        <tbody id="reunioes-lista"></tbody>
       </table>
     </div>
 
-    <!-- Conteúdo da aba Usuários -->
-    <div id="usuarios" class="tab-content">
-      <h3>Gerenciar Usuários</h3>
-      <table>
+    <!-- Seção Usuários -->
+    <div id="usuarios-section" class="section" style="display: none;">
+      <h2>Gerenciar Usuários</h2>
+      <table class="table">
         <thead>
           <tr>
             <th>Usuário</th>
@@ -79,26 +61,12 @@
             <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="usuarios-list"></tbody>
+        <tbody id="usuarios-lista"></tbody>
       </table>
     </div>
   </div>
 
-  <script src="script.js"></script>
-  <script>
-    // Alternância das abas
-    const tabs = document.querySelectorAll(".tab");
-    const contents = document.querySelectorAll(".tab-content");
-
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        contents.forEach(c => c.classList.remove("active"));
-
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.tab).classList.add("active");
-      });
-    });
-  </script>
+  <!-- Script -->
+  <script type="module" src="home.js"></script>
 </body>
 </html>
