@@ -1,7 +1,7 @@
-// ================= Firebase Config ==================
+// Importa funções do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -14,138 +14,137 @@ const firebaseConfig = {
   measurementId: "G-JC4Y4PD3YV"
 };
 
-// Inicialização
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ================= Funções de Autenticação ==================
-export async function loginUser(email, senha) {
+// Login
+document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
 
-    // Buscar tipo do usuário no Firestore
-    const querySnapshot = await getDocs(collection(db, "usuarios"));
-    let usuarioLogado = null;
+    // Buscar dados no Firestore
+    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
 
-    querySnapshot.forEach((doc) => {
-      const dados = doc.data();
-      if (dados.email === email) {
-        usuarioLogado = {
-          usuario: dados.usuario,
-          email: dados.email,
-          tipo: dados.tipo
-        };
-      }
-    });
+      // Normaliza o tipo (ADM / USUARIO)
+      const tipo = (userData.tipo || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-    if (!usuarioLogado) throw new Error("Usuário não encontrado no Firestore.");
+      localStorage.setItem("usuarioLogado", JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        usuario: userData.usuario,
+        tipo: tipo
+      }));
 
-    // Salvar no localStorage
-    localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
-
-    // Redirecionar
-    window.location.href = "home.html";
+      window.location.href = "home.html";
+    } else {
+      alert("Usuário não encontrado no banco de dados.");
+    }
   } catch (error) {
     alert("Erro ao logar: " + error.message);
   }
-}
+});
 
-export async function registerUser(email, senha, usuario) {
+// Registro
+document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  const usuario = document.getElementById("usuario").value;
+
   try {
-    await createUserWithEmailAndPassword(auth, email, senha);
-    await addDoc(collection(db, "usuarios"), {
-      usuario,
-      email,
-      tipo: "USUARIO"
+    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "usuarios", user.uid), {
+      email: email,
+      usuario: usuario,
+      tipo: "USUARIO" // sempre padrão
     });
-    alert("Usuário cadastrado com sucesso!");
+
+    alert("Conta criada com sucesso!");
     window.location.href = "index.html";
   } catch (error) {
-    alert("Erro ao cadastrar: " + error.message);
+    alert("Erro ao criar conta: " + error.message);
   }
-}
+});
 
-export async function resetPassword(email) {
+// Recuperação de senha
+document.getElementById("resetForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+
   try {
     await sendPasswordResetEmail(auth, email);
-    alert("E-mail de redefinição enviado!");
+    alert("Link de recuperação enviado para o e-mail.");
+    window.location.href = "index.html";
   } catch (error) {
-    alert("Erro ao enviar redefinição: " + error.message);
+    alert("Erro ao enviar link: " + error.message);
   }
-}
+});
 
-export async function logoutUser() {
+// Logout
+document.getElementById("btnLogoff")?.addEventListener("click", async () => {
   await signOut(auth);
   localStorage.removeItem("usuarioLogado");
   window.location.href = "index.html";
-}
+});
 
-// ================= Funções de Reuniões ==================
-export async function agendarReuniao(titulo, data, horaInicio, horaFim, organizador) {
-  try {
-    await addDoc(collection(db, "reunioes"), {
-      titulo,
-      data,
-      horaInicio,
-      horaFim,
-      organizador
-    });
-    alert("Reunião agendada!");
-    window.location.reload();
-  } catch (error) {
-    alert("Erro ao agendar reunião: " + error.message);
+// Carregar dados do usuário logado
+window.addEventListener("DOMContentLoaded", async () => {
+  if (window.location.pathname.includes("home.html")) {
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (!usuarioLogado) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    document.getElementById("welcomeUser").innerText = `🎉 Bem-vindo ${usuarioLogado.usuario} (${usuarioLogado.tipo})`;
+
+    if (usuarioLogado.tipo === "ADM") {
+      document.getElementById("btnHorarios").style.display = "block";
+      document.getElementById("btnUsuarios").style.display = "block";
+    } else {
+      document.getElementById("btnHorarios").style.display = "none";
+      document.getElementById("btnUsuarios").style.display = "none";
+    }
+
+    carregarReunioes(usuarioLogado.tipo);
   }
-}
+});
 
-export async function carregarReunioes(isAdmin) {
-  try {
-    const lista = document.getElementById("lista-reunioes");
-    lista.innerHTML = "";
+// Função para carregar reuniões
+async function carregarReunioes(tipo) {
+  const tabela = document.getElementById("tabelaReunioes");
+  tabela.innerHTML = "";
 
-    const querySnapshot = await getDocs(collection(db, "reunioes"));
-    querySnapshot.forEach((docSnap) => {
-      const reuniao = docSnap.data();
-      const li = document.createElement("li");
+  const querySnapshot = await getDocs(collection(db, "reunioes"));
+  querySnapshot.forEach((docSnap) => {
+    const reuniao = docSnap.data();
+    const tr = document.createElement("tr");
 
-      li.innerHTML = `
-        <strong>${reuniao.titulo}</strong> <br>
-        Data: ${reuniao.data} <br>
-        Início: ${reuniao.horaInicio} - Fim: ${reuniao.horaFim} <br>
-        Organizador: ${reuniao.organizador}
-      `;
+    tr.innerHTML = `
+      <td>${reuniao.titulo}</td>
+      <td>${reuniao.organizador}</td>
+      <td>${reuniao.data}</td>
+      <td>${reuniao.horaInicio}</td>
+      <td>${reuniao.horaFim}</td>
+      <td>
+        ${tipo === "ADM" ? `
+          <button class="btn-editar" data-id="${docSnap.id}">Editar</button>
+          <button class="btn-excluir" data-id="${docSnap.id}">Excluir</button>
+        ` : ""}
+      </td>
+    `;
 
-      // Apenas ADM pode editar/excluir
-      if (isAdmin) {
-        const btnEditar = document.createElement("button");
-        btnEditar.innerText = "Editar";
-        btnEditar.onclick = async () => {
-          const novoTitulo = prompt("Novo título:", reuniao.titulo);
-          if (novoTitulo) {
-            await updateDoc(doc(db, "reunioes", docSnap.id), { titulo: novoTitulo });
-            alert("Reunião atualizada!");
-            window.location.reload();
-          }
-        };
-
-        const btnExcluir = document.createElement("button");
-        btnExcluir.innerText = "Excluir";
-        btnExcluir.onclick = async () => {
-          if (confirm("Deseja excluir esta reunião?")) {
-            await deleteDoc(doc(db, "reunioes", docSnap.id));
-            alert("Reunião excluída!");
-            window.location.reload();
-          }
-        };
-
-        li.appendChild(btnEditar);
-        li.appendChild(btnExcluir);
-      }
-
-      lista.appendChild(li);
-    });
-  } catch (error) {
-    alert("Erro ao carregar reuniões: " + error.message);
-  }
+    tabela.appendChild(tr);
+  });
 }
