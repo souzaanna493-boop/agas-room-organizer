@@ -1,6 +1,17 @@
-// ================= Firebase Config =================
+// Importando Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, 
+         createUserWithEmailAndPassword, 
+         signInWithEmailAndPassword, 
+         sendPasswordResetEmail, 
+         confirmPasswordReset,
+         onAuthStateChanged,
+         signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, setDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Configuração Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
+  apiKey: "SUA_API_KEY",
   authDomain: "agas-rooms-organizer.firebaseapp.com",
   projectId: "agas-rooms-organizer",
   storageBucket: "agas-rooms-organizer.appspot.com",
@@ -10,180 +21,114 @@ const firebaseConfig = {
 };
 
 // Inicializa Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// ================= LOGIN =================
-document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const senha = document.getElementById("loginSenha").value;
+// ================== LOGIN ==================
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const loginInput = document.getElementById("loginInput").value.trim();
+    const password = document.getElementById("passwordInput").value;
 
-  try {
-    await auth.signInWithEmailAndPassword(email, senha);
-    window.location.href = "home.html";
-  } catch (error) {
-    alert("Erro ao logar: " + error.message);
-  }
-});
+    try {
+      // Login sempre feito com email (se digitou usuário, busca email)
+      let email = loginInput;
+      if (!loginInput.includes("@")) {
+        const userDoc = await getDoc(doc(db, "usuarios", loginInput.toLowerCase()));
+        if (userDoc.exists()) {
+          email = userDoc.data().email;
+        } else {
+          alert("Usuário não encontrado");
+          return;
+        }
+      }
 
-// ================= CADASTRO =================
-document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("registerEmail").value;
-  const senha = document.getElementById("registerSenha").value;
-  const usuario = document.getElementById("registerUsuario").value;
-
-  try {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, senha);
-    const user = userCredential.user;
-
-    // Salvar no Firestore
-    await db.collection("usuarios").doc(user.uid).set({
-      email,
-      usuario,
-      tipo: "Usuário"
-    });
-
-    alert("Usuário cadastrado com sucesso!");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert("Erro ao cadastrar: " + error.message);
-  }
-});
-
-// ================= RECUPERAR SENHA =================
-document.getElementById("resetForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("resetEmail").value;
-
-  try {
-    await auth.sendPasswordResetEmail(email);
-    alert("Link para redefinição enviado para " + email);
-  } catch (error) {
-    alert("Erro ao enviar link: " + error.message);
-  }
-});
-
-// ================= LOGOFF =================
-document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-  await auth.signOut();
-  window.location.href = "index.html";
-});
-
-// ================= REUNIÕES (CRUD) =================
-const reunioesTable = document.getElementById("reunioesTable");
-
-async function carregarReunioes() {
-  const snapshot = await db.collection("reunioes").orderBy("data").get();
-  reunioesTable.innerHTML = "";
-
-  snapshot.forEach(doc => {
-    const r = doc.data();
-    const row = `
-      <tr>
-        <td>${r.titulo}</td>
-        <td>${r.organizador}</td>
-        <td>${r.data}</td>
-        <td>${r.horaInicio}</td>
-        <td>${r.horaFim}</td>
-        <td>
-          ${window.currentUserTipo === "ADM" ? `
-            <button onclick="editarReuniao('${doc.id}')">Editar</button>
-            <button onclick="excluirReuniao('${doc.id}')">Excluir</button>
-          ` : ""}
-        </td>
-      </tr>
-    `;
-    reunioesTable.innerHTML += row;
-  });
-}
-
-document.getElementById("agendarForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const titulo = document.getElementById("titulo").value;
-  const data = document.getElementById("data").value;
-  const horaInicio = document.getElementById("horaInicio").value;
-  const horaFim = document.getElementById("horaFim").value;
-
-  await db.collection("reunioes").add({
-    titulo,
-    data,
-    horaInicio,
-    horaFim,
-    organizador: window.currentUsuario
-  });
-
-  alert("Reunião agendada!");
-  carregarReunioes();
-});
-
-async function excluirReuniao(id) {
-  if (confirm("Deseja excluir esta reunião?")) {
-    await db.collection("reunioes").doc(id).delete();
-    carregarReunioes();
-  }
-}
-
-async function editarReuniao(id) {
-  const novoTitulo = prompt("Novo título:");
-  if (novoTitulo) {
-    await db.collection("reunioes").doc(id).update({ titulo: novoTitulo });
-    carregarReunioes();
-  }
-}
-
-// ================= USUÁRIOS (APENAS ADM) =================
-const usuariosTable = document.getElementById("usuariosTable");
-
-async function carregarUsuarios() {
-  const snapshot = await db.collection("usuarios").get();
-  usuariosTable.innerHTML = "";
-
-  snapshot.forEach(doc => {
-    const u = doc.data();
-    const row = `
-      <tr>
-        <td>${u.usuario}</td>
-        <td>${u.tipo}</td>
-        <td>
-          ${u.tipo !== "ADM" ? `
-            <button onclick="excluirUsuario('${doc.id}')">Excluir</button>
-            <button onclick="promoverUsuario('${doc.id}')">Promover ADM</button>
-          ` : "Protegido"}
-        </td>
-      </tr>
-    `;
-    usuariosTable.innerHTML += row;
-  });
-}
-
-async function excluirUsuario(id) {
-  if (confirm("Deseja excluir este usuário?")) {
-    await db.collection("usuarios").doc(id).delete();
-    carregarUsuarios();
-  }
-}
-
-async function promoverUsuario(id) {
-  await db.collection("usuarios").doc(id).update({ tipo: "ADM" });
-  carregarUsuarios();
-}
-
-// ================= VERIFICA LOGIN =================
-auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    const doc = await db.collection("usuarios").doc(user.uid).get();
-    const dados = doc.data();
-    window.currentUsuario = dados.usuario;
-    window.currentUserTipo = dados.tipo;
-
-    if (document.getElementById("reunioesTable")) carregarReunioes();
-    if (document.getElementById("usuariosTable") && dados.tipo === "ADM") carregarUsuarios();
-  } else {
-    if (!window.location.href.includes("index.html")) {
-      window.location.href = "index.html";
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = "home.html";
+    } catch (error) {
+      alert("Erro no login: " + error.message);
     }
-  }
-});
+  });
+}
+
+// ================== CADASTRO ==================
+const registerForm = document.getElementById("registerForm");
+if (registerForm) {
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("usernameRegister").value.trim();
+    const email = document.getElementById("emailRegister").value.trim();
+    const password = document.getElementById("passwordRegister").value;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Salva dados no Firestore
+      await setDoc(doc(db, "usuarios", username.toLowerCase()), {
+        username: username,
+        email: email,
+        admin: false
+      });
+
+      alert("Usuário cadastrado com sucesso!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("Erro no cadastro: " + error.message);
+    }
+  });
+}
+
+// ================== RECUPERAÇÃO DE SENHA ==================
+const resetForm = document.getElementById("resetForm");
+if (resetForm) {
+  resetForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("resetEmail").value.trim();
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Link de recuperação enviado para o e-mail.");
+    } catch (error) {
+      alert("Erro ao enviar e-mail: " + error.message);
+    }
+  });
+}
+
+// ================== NOVA SENHA ==================
+const newPasswordForm = document.getElementById("newPasswordForm");
+if (newPasswordForm) {
+  newPasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (newPassword !== confirmPassword) {
+      alert("As senhas não coincidem!");
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const oobCode = params.get("oobCode");
+
+    try {
+      await confirmPasswordReset(auth, oobCode, newPassword);
+      alert("Senha alterada com sucesso!");
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("Erro ao redefinir senha: " + error.message);
+    }
+  });
+}
+
+// ================== LOGOUT ==================
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+}
