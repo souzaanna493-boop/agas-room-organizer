@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGAS - Login</title>
+  <title>Login - AGAS Room Organizer</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="auth-container">
-    <h1>AGAS</h1>
-    <p>Room Organizer - Login</p>
+  <div class="container">
+    <h2>AGAS Room Organizer</h2>
+    <h3>Login</h3>
 
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="E-mail" required>
-      <input type="password" id="loginSenha" placeholder="Senha" required>
+      <input type="text" id="loginInput" placeholder="Usuário ou E-mail" required>
+      <input type="password" id="passwordInput" placeholder="Senha" required>
       <button type="submit">Entrar</button>
     </form>
 
-    <div class="auth-links">
-      <a href="register.html">Criar conta</a> | 
+    <p>
+      <a href="register.html">Criar nova conta</a> |
       <a href="recuperar.html">Esqueci minha senha</a>
-    </div>
+    </p>
   </div>
 
+  <!-- Firebase -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
