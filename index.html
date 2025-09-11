@@ -3,32 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - AGAS Room Organizer</title>
-  <link rel="stylesheet" href="style.css">
+  <title>AGAS Room Organizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; background: #ffffff; margin: 0; padding: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+    .container { width: 850px; margin-top: 30px; padding: 20px 30px; background: #fff; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0,0,0,0.1); position: relative; }
+    .logo { text-align: center; margin-bottom: 20px; }
+    .logo h1 { font-size: 48px; font-weight: 900; background: linear-gradient(90deg, #ff4fd8, #b34dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+    .logo span { font-size: 16px; color: #111; letter-spacing: 3px; }
+    .status-bar { position: absolute; top: 20px; left: 30px; font-size: 14px; font-weight: bold; color: #333; }
+    .logoff-btn { position: absolute; top: 20px; right: 30px; background: #f44336; color: white; border: none; border-radius: 8px; padding: 8px 15px; cursor: pointer; font-size: 14px; font-weight: bold; display: none; }
+    h2 { margin: 10px 0; font-size: 18px; font-weight: 700; }
+    .form-group { display: flex; gap: 15px; margin-bottom: 20px; }
+    .form-group input, .form-group select { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+    .book-btn { margin-top: 10px; width: 100%; padding: 10px; border: none; border-radius: 8px; background: linear-gradient(90deg, #ff4fd8, #b34dff); color: white; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .book-btn:hover { opacity: 0.9; }
+    #loginSection .book-btn { padding: 8px; font-size: 13px; margin-top: 5px; }
+    .login-links { margin-top: 10px; }
+    .login-links a { display: block; margin-top: 5px; font-size: 13px; color: #b34dff; text-decoration: none; cursor: pointer; }
+    .login-links a:hover { text-decoration: underline; }
+    .tabs { display: flex; gap: 10px; margin: 15px 0; }
+    .tab { flex: 1; padding: 10px; border: none; border-radius: 8px; background: #eee; cursor: pointer; font-weight: bold; }
+    .tab.active { background: linear-gradient(90deg, #ff4fd8, #b34dff); color: #fff; }
+    .meeting-list, .users-list { margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    table th, table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+    .action-btn { margin: 2px; padding: 5px 10px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .edit-btn { background: #4cafef; color: white; }
+    .delete-btn { background: #f44336; color: white; }
+    .reset-btn { background: #ff9800; color: white; }
+    .promote-btn { background: #9c27b0; color: white; }
+    .view-only { color: #666; font-size: 12px; }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>AGAS Room Organizer</h1>
-    <h2>Login</h2>
+    <div class="logo">
+      <h1>AGAS</h1>
+      <span>ROOM ORGANIZER</span>
+    </div>
+    <div class="status-bar" id="statusBar"></div>
+    <button class="logoff-btn" id="logoffBtn">Logoff</button>
 
-    <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="E-mail" required>
-      <input type="password" id="loginPassword" placeholder="Senha" required>
-      <button type="submit">Entrar</button>
-    </form>
+    <!-- LOGIN -->
+    <div id="loginSection">
+      <h2>Login</h2>
+      <div class="form-group">
+        <input type="text" id="loginUsername" placeholder="Usuário">
+        <input type="password" id="loginPassword" placeholder="Senha">
+      </div>
+      <button class="book-btn" onclick="login()">Entrar</button>
+      <div class="login-links">
+        <a onclick="showRegister()">Criar Conta</a>
+        <a onclick="showRecovery()">Recuperar Senha</a>
+      </div>
+    </div>
 
-    <div class="links">
-      <a href="register.html">Criar nova conta</a> |
-      <a href="recuperar.html">Esqueci minha senha</a>
+    <!-- REGISTRO -->
+    <div id="registerSection" style="display:none;">
+      <h2>Criar Conta</h2>
+      <div class="form-group">
+        <input type="text" id="regUsername" placeholder="Usuário">
+        <input type="password" id="regPassword" placeholder="Senha">
+      </div>
+      <div class="form-group">
+        <input type="text" id="regQuestion" placeholder="Pergunta de segurança">
+        <input type="text" id="regAnswer" placeholder="Resposta de segurança">
+      </div>
+      <button class="book-btn" onclick="register()">Registrar</button>
+      <button class="book-btn" style="background:#999;" onclick="showLogin()">Voltar</button>
+    </div>
+
+    <!-- RECUPERAR SENHA -->
+    <div id="recoverySection" style="display:none;">
+      <h2>Recuperar Senha</h2>
+      <input type="text" id="recUsername" placeholder="Usuário"><br><br>
+      <button class="book-btn" onclick="askQuestion()">Próximo</button>
+      <button class="book-btn" style="background:#999;" onclick="showLogin()">Voltar</button>
+      <div id="securityQuestion" style="margin-top:15px;display:none;"></div>
+    </div>
+
+    <!-- SISTEMA -->
+    <div id="mainSection" style="display:none;">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('horarios')">Horários</button>
+        <button class="tab" id="usuariosTabBtn" style="display:none;" onclick="switchTab('usuarios')">Usuários</button>
+      </div>
+
+      <!-- HORARIOS -->
+      <div id="tabHorarios">
+        <h2>Reservar</h2>
+        <div class="form-group">
+          <input type="text" id="titulo" placeholder="Título da reunião">
+          <input type="date" id="data">
+          <select id="horaInicio"></select>
+          <select id="horaFim"></select>
+        </div>
+        <button class="book-btn" id="bookBtn">Agendar Reunião</button>
+        <div class="meeting-list">
+          <h3>Reuniões Agendadas</h3>
+          <table id="meetingTable">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Organizador</th>
+                <th>Data</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USUARIOS (só ADM) -->
+      <div id="tabUsuarios" style="display:none;">
+        <h2>Gerenciar Usuários</h2>
+        <div class="users-list">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update, remove, onValue }
+      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-  <!-- Seu script principal -->
-  <script src="script.js"></script>
+    // Configuração Firebase do seu projeto (ATUALIZADA)
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2tV3I2rhTR80HDbrqqQ6OHWD78EJ2-eU",
+      authDomain: "agas-rooms-organizer.firebaseapp.com",
+      databaseURL: "https://agas-rooms-organizer-default-rtdb.firebaseio.com",
+      projectId: "agas-rooms-organizer",
+      storageBucket: "agas-rooms-organizer.firebasestorage.app",
+      messagingSenderId: "101093561086",
+      appId: "1:101093561086:web:967b2829508ab589fecbaf",
+      measurementId: "G-JC4Y4PD3YV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    /* --- TODO: aqui continua o mesmo código que você já tem para login, cadastro, reservas etc --- */
+  </script>
 </body>
 </html>
+
