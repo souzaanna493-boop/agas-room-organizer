@@ -18,19 +18,38 @@ const db = firebase.firestore();
 
 // ==============================
 // LOGIN
-// ==============================
-async function login(event) {
-  event.preventDefault();
-  const email = document.getElementById("login-email").value;
-  const senha = document.getElementById("login-senha").value;
+document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    await auth.signInWithEmailAndPassword(email, senha);
-    window.location.href = "home.html";
-  } catch (error) {
-    alert("Erro no login: " + error.message);
-  }
-}
+    const emailOrUser = document.getElementById("loginEmail").value.trim();
+    const senha = document.getElementById("loginPassword").value.trim();
+
+    try {
+        let emailToLogin = emailOrUser;
+
+        // Se o usuário digitou um nome de usuário, busca o email correspondente no Firestore
+        if (!emailOrUser.includes("@")) {
+            const q = query(collection(db, "usuarios"), where("usuario", "==", emailOrUser));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                emailToLogin = querySnapshot.docs[0].data().email;
+            } else {
+                throw new Error("Usuário não encontrado.");
+            }
+        }
+
+        // Agora faz login com email encontrado + senha
+        const userCredential = await signInWithEmailAndPassword(auth, emailToLogin, senha);
+
+        // Redireciona após login
+        localStorage.setItem("usuarioLogado", userCredential.user.email);
+        window.location.href = "home.html";
+
+    } catch (error) {
+        alert("Erro no login: " + error.message);
+    }
+});
+
 
 // ==============================
 // REGISTRO
